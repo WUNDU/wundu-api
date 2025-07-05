@@ -8,9 +8,11 @@ import ao.com.wundu.infra.persistence.mappers.UserMapper;
 import ao.com.wundu.infra.presentation.entities.User;
 import ao.com.wundu.infra.presentation.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class FindUserByEmailImpl implements FindUserByEmail {
 
     @Autowired

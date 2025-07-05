@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
+    @Autowired
     private FindUserByEmail findUserByEmail;
+    @Autowired
     private FindRoleByEmail findRoleByEmail;
 
     @Override
@@ -24,6 +26,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     public JwtToken getTokenAuthenticated(String email) {
         Role role = findRoleByEmail.execute(email);
-        return JwtUtils.createToken(email, role.name().substring("Role_".length()));
+        return JwtUtils.createToken(email, role.name());
+        //return JwtUtils.createToken(email, role.name().substring("Role_".length()));
     }
 }

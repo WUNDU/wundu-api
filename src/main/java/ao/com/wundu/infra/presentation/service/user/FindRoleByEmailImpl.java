@@ -6,7 +6,9 @@ import ao.com.wundu.infra.persistence.dtos.UserResponse;
 import ao.com.wundu.infra.presentation.entities.User;
 import ao.com.wundu.infra.presentation.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FindRoleByEmailImpl implements FindRoleByEmail {
 
     @Autowired

@@ -42,6 +42,7 @@ public class JwtUtils {
                 .setHeaderParam("typ", "JWT")
                 .setSubject(email)
                 .setIssuedAt(issueAt)
+                .setExpiration(limit)
                 .signWith(generatekey(), SignatureAlgorithm.HS256)
                 .claim("role", role)
                 .compact();
@@ -57,7 +58,7 @@ public class JwtUtils {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(generatekey()).build()
-                    .parseClaimsJwt(refacturToken(token)).getBody();
+                    .parseClaimsJws(refacturToken(token)).getBody();
         } catch (JwtException ex) {
             logger.error(String.format("Token inválido %s", ex.getMessage()));
         }
@@ -69,7 +70,7 @@ public class JwtUtils {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(generatekey()).build()
-                    .parseClaimsJwt(refacturToken(token));
+                    .parseClaimsJws(refacturToken(token));
 
             return true;
         } catch (JwtException ex) {
