@@ -17,9 +17,11 @@ public final class TransactionMapper {
             request.amount(),
             request.description(),
             request.type(),
-            request.userId()
+            request.userId(),
+            request.transactionDate()
         );
         transaction.setSource(request.source());
+        transaction.setTransactionDate(request.transactionDate());
         return transaction;
     }
 
@@ -32,7 +34,8 @@ public final class TransactionMapper {
             transaction.getAmount(),
             transaction.getUserId(),
             transaction.getDescription(),
-            transaction.getDateTime()
+            transaction.getDateTime(),
+            transaction.getTransactionDate()
         );
     }
 

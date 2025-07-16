@@ -1,5 +1,8 @@
 package ao.com.wundu.infra.persistence.dtos;
 
+import java.time.LocalDate;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -23,6 +26,10 @@ public record TransactionRequest(
     String userId,
 
     @Size(max = 255, message = "A descrição deve ter no máximo 255 caracteres")
-    String description
+    String description,
+
+    @NotNull(message = "A data da transação é obrigatória")
+    @Schema(example = "2025-07-05")
+    LocalDate transactionDate
 
 ) {}

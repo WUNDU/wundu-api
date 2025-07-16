@@ -1,6 +1,7 @@
 package ao.com.wundu.infra.persistence.dtos;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record TransactionResponse (
@@ -11,5 +12,7 @@ public record TransactionResponse (
     String userId,
     String description,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime dateTime
+    LocalDateTime dateTime,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate transactionDate
 ) {}
