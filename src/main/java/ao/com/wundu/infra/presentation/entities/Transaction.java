@@ -32,6 +32,10 @@ public class Transaction {
     @CreationTimestamp
     @Column(name = "date_time", nullable = false)
     private LocalDateTime dateTime;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     public Transaction() {}
 
@@ -74,6 +78,10 @@ public class Transaction {
     public String getUserId() {
         return userId;
     }
+    
+    public Category getCategory() {
+        return category;
+    }
 
     public String getDescription() {
         return description;
@@ -98,9 +106,13 @@ public class Transaction {
     public void setAmount(Double amount) {
         this.amount = amount;
     }
-
+    
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public void setDescription(String description) {
