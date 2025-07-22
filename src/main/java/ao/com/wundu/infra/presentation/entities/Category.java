@@ -15,17 +15,13 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
-    private String description;
-
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Transaction> transactions = new ArrayList<>();
 
     public Category() {}
 
-    public Category(String name, String description) {
+    public Category(String name) {
         this.name = name;
-        this.description = description;
     }
 
     public String getId() { return id; }
@@ -33,9 +29,6 @@ public class Category {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
 
     public List<Transaction> getTransactions() { return transactions; }
     public void setTransactions(List<Transaction> transactions) { this.transactions = transactions; }

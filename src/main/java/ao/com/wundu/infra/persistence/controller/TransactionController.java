@@ -4,14 +4,18 @@ import ao.com.wundu.core.usecases.transaction.CreateTransactionUseCase;
 import ao.com.wundu.core.usecases.transaction.GetTransactionByIdUseCase;
 import ao.com.wundu.core.usecases.transaction.ListTransactionByUserAndCategoryUseCase;
 import ao.com.wundu.core.usecases.transaction.ListTransactionUseCase;
+import ao.com.wundu.core.usecases.transaction.DefineTransactionCategoryUseCase;
 import ao.com.wundu.core.usecases.transaction.ListTransactionByUserUseCase;
+import ao.com.wundu.infra.persistence.dtos.DefineCategoryRequest;
 import ao.com.wundu.infra.persistence.dtos.TransactionRequest;
 import ao.com.wundu.infra.persistence.dtos.TransactionResponse;
+import ao.com.wundu.infra.persistence.dtos.DefineCategoryRequest;
 import ao.com.wundu.infra.persistence.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
@@ -38,6 +42,9 @@ public class TransactionController {
 
         @Autowired
         private GetTransactionByIdUseCase getTransactionByIdUseCase;
+
+        @Autowired
+        private DefineTransactionCategoryUseCase defineTransactionCategoryUseCase;
 
         @Autowired
         private ListTransactionByUserAndCategoryUseCase listByUserAndCategoryUseCase;
@@ -89,5 +96,18 @@ public class TransactionController {
                         @PathVariable String categoryId) {
                 List<TransactionResponse> responses = listByUserAndCategoryUseCase.execute(userId, categoryId);
                 return ResponseEntity.ok(responses);
+        }
+
+        @Operation(summary = "Definir categoria e descrição de uma transação", description = "Atualiza a descrição e associa uma categoria à transação. Se a categoria não existir, ela será criada automaticamente.")
+        @ApiResponses({
+                        @ApiResponse(responseCode = "200", description = "Transação atualizada com sucesso"),
+                        @ApiResponse(responseCode = "404", description = "Transação não encontrada"),
+                        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
+        })
+        @PutMapping("/{id}/define-category")
+        public ResponseEntity<TransactionResponse> defineCategory(
+                        @PathVariable String id,
+                        @RequestBody @Valid DefineCategoryRequest request) {
+                return ResponseEntity.ok(defineTransactionCategoryUseCase.execute(id, request));
         }
 }

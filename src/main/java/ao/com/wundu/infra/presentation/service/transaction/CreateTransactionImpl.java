@@ -30,8 +30,7 @@ public class CreateTransactionImpl implements CreateTransactionUseCase {
     public TransactionResponse execute(TransactionRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Usuário com id=%s não encontrado", request.userId()))
-                );
+                        String.format("Usuário com id=%s não encontrado", request.userId())));
 
         Transaction transaction = TransactionMapper.toEntity(request);
 
@@ -40,10 +39,7 @@ public class CreateTransactionImpl implements CreateTransactionUseCase {
 
             Category category = categoryRepository.findByName(categoryName)
                     .orElseGet(() -> {
-                        Category newCategory = new Category(
-                                categoryName,
-                                request.category().description() != null ? request.category().description() : ""
-                        );
+                        Category newCategory = new Category(categoryName);
                         return categoryRepository.save(newCategory);
                     });
 

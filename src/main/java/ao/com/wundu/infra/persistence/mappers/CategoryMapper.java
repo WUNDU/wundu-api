@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 public class CategoryMapper {
     public static Category toEntity(CategoryRequest request) {
-        return new Category(request.name(), request.description());
+        return new Category(request.name());
     }
 
     public static CategoryResponse toResponse(Category category) {
-        return new CategoryResponse(category.getId(), category.getName(), category.getDescription());
+        return new CategoryResponse(category.getId(), category.getName());
     }
 
     public static List<CategoryResponse> toList(List<Category> categories) {
