@@ -11,17 +11,17 @@ import java.util.stream.Collectors;
 
 public final class TransactionMapper {
 
-    private TransactionMapper() {}
+    private TransactionMapper() {
+    }
 
     // Converte DTO de entrada -> Entidade
     public static Transaction toEntity(TransactionRequest request) {
         Transaction transaction = new Transaction(
-            request.amount(),
-            request.description(),
-            request.type(),
-            request.userId(),
-            request.transactionDate()
-        );
+                request.amount(),
+                request.description(),
+                request.type(),
+                request.userId(),
+                request.transactionDate());
         transaction.setSource(request.source());
         transaction.setTransactionDate(request.transactionDate());
         transaction.setCategory(null);
@@ -34,18 +34,17 @@ public final class TransactionMapper {
         if (transaction.getCategory() != null) {
             categoryResponse = CategoryMapper.toResponse(transaction.getCategory());
         }
-    return new TransactionResponse(
-        transaction.getId(),
-        transaction.getType(),
-        transaction.getSource(),
-        transaction.getAmount(),
-        transaction.getUserId(),
-        transaction.getDescription(),
-        transaction.getDateTime(),
-        transaction.getTransactionDate(),
-        categoryResponse
-    );
-}
+        return new TransactionResponse(
+                transaction.getId(),
+                transaction.getType(),
+                transaction.getSource(),
+                transaction.getAmount(),
+                transaction.getUserId(),
+                transaction.getDescription(),
+                transaction.getDateTime(),
+                transaction.getTransactionDate(),
+                categoryResponse);
+    }
 
     // Converte Lista de Entidades -> Lista de DTOs
     public static List<TransactionResponse> toList(List<Transaction> transactions) {

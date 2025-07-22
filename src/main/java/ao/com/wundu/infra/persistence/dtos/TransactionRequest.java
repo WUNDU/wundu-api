@@ -30,6 +30,8 @@ public record TransactionRequest(
 
     @NotNull(message = "A data da transação é obrigatória")
     @Schema(example = "2025-07-05")
-    LocalDate transactionDate
+    LocalDate transactionDate,
+
+    CategoryRequest category
 
 ) {}

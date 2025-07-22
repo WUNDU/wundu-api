@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Categorias", description = "Operações relacionadas às categorias de transações")
+@Tag(name = "Categories", description = "Operações relacionadas às categorias de transações")
 @RestController
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
@@ -30,7 +30,7 @@ public class CategoryController {
     @Autowired
     private ListAllCategoriesUseCase listAllCategoriesUseCase;
 
-    @Operation(summary = "Criar nova categoria", description = "Apenas ADMIN pode criar uma nova categoria",
+    @Operation(summary = "Criar nova categoria", description = "Usuario criar uma nova categoria",
         responses = {
             @ApiResponse(responseCode = "201", description = "Categoria criada com sucesso",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponse.class))),
