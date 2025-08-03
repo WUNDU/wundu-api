@@ -1,0 +1,10 @@
+package ao.com.wundu.category.repository;
+
+import ao.com.wundu.category.entity.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface CategoryRepository extends JpaRepository<Category, String> {
+    Optional<Category> findByName(String name);
+}
