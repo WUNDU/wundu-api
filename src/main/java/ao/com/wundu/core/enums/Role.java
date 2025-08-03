@@ -1,5 +1,5 @@
 package ao.com.wundu.core.enums;
 
 public enum Role {
-    ADMIN, CLIENTE
+    ROLE_ADMIN, ROLE_CLIENTE
 }
