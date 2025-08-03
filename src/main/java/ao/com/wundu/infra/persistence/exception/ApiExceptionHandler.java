@@ -24,7 +24,6 @@ public class ApiExceptionHandler {
     private static final String RESET = "\u001B[0m";
 
     private static final String BLUE = "\u001B[34m";
-
     private static final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @ExceptionHandler(AccessDeniedException.class)

@@ -29,7 +29,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 25)
-    private Role role = Role.CLIENTE;
+    private Role role = Role.ROLE_CLIENTE;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
