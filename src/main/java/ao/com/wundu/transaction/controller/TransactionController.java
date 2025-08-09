@@ -1,10 +1,10 @@
-package ao.com.wundu.transaciton.controller;
+package ao.com.wundu.transaction.controller;
 
 import ao.com.wundu.category.dto.DefineCategoryRequest;
-import ao.com.wundu.transaciton.dtos.TransactionRequest;
-import ao.com.wundu.transaciton.dtos.TransactionResponse;
 import ao.com.wundu.exception.ErrorMessage;
-import ao.com.wundu.transaciton.service.TransactionService;
+import ao.com.wundu.transaction.dtos.TransactionRequest;
+import ao.com.wundu.transaction.dtos.TransactionResponse;
+import ao.com.wundu.transaction.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

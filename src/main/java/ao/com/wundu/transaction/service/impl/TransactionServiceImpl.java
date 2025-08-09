@@ -1,15 +1,15 @@
-package ao.com.wundu.transaciton.service.impl;
+package ao.com.wundu.transaction.service.impl;
 
 import ao.com.wundu.category.dto.DefineCategoryRequest;
 import ao.com.wundu.category.entity.Category;
 import ao.com.wundu.category.repository.CategoryRepository;
 import ao.com.wundu.exception.ResourceNotFoundException;
-import ao.com.wundu.transaciton.dtos.TransactionRequest;
-import ao.com.wundu.transaciton.dtos.TransactionResponse;
-import ao.com.wundu.transaciton.entity.Transaction;
-import ao.com.wundu.transaciton.mapper.TransactionMapper;
-import ao.com.wundu.transaciton.repository.TransactionRepository;
-import ao.com.wundu.transaciton.service.TransactionService;
+import ao.com.wundu.transaction.dtos.TransactionRequest;
+import ao.com.wundu.transaction.dtos.TransactionResponse;
+import ao.com.wundu.transaction.entity.Transaction;
+import ao.com.wundu.transaction.mapper.TransactionMapper;
+import ao.com.wundu.transaction.repository.TransactionRepository;
+import ao.com.wundu.transaction.service.TransactionService;
 import ao.com.wundu.usuario.entity.User;
 import ao.com.wundu.usuario.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

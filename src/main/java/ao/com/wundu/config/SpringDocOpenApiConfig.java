@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,11 +13,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SpringDocOpenApiConfig {
 
+    private static final String SECURITY_SCHEME_NAME = "bearerAuth";
+
     @Bean
     public OpenAPI openAPI() {
-
         return new OpenAPI()
-                .components(new Components().addSecuritySchemes("security", securityScheme()))
+                .components(new Components()
+                        .addSecuritySchemes(SECURITY_SCHEME_NAME, createSecurityScheme()))
+                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .info(
                         new Info()
                                 .title("API - WUNDU")
@@ -26,16 +30,13 @@ public class SpringDocOpenApiConfig {
                                 .license(new License().name("Apache 2.0"))
                                 .contact(new Contact().name("WUNDU").email("fernandowundu@gmail.com"))
                 );
-
     }
 
-    private SecurityScheme securityScheme() {
+    private SecurityScheme createSecurityScheme() {
         return new SecurityScheme()
-                .description("Insira um bearer token válido para prosseguir")
                 .type(SecurityScheme.Type.HTTP)
-                .in(SecurityScheme.In.HEADER)
                 .scheme("bearer")
                 .bearerFormat("JWT")
-                .name("security");
+                .description("Insira um bearer token válido para prosseguir");
     }
 }

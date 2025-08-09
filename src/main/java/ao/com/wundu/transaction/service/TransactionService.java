@@ -1,8 +1,8 @@
-package ao.com.wundu.transaciton.service;
+package ao.com.wundu.transaction.service;
 
 import ao.com.wundu.category.dto.DefineCategoryRequest;
-import ao.com.wundu.transaciton.dtos.TransactionRequest;
-import ao.com.wundu.transaciton.dtos.TransactionResponse;
+import ao.com.wundu.transaction.dtos.TransactionRequest;
+import ao.com.wundu.transaction.dtos.TransactionResponse;
 
 import java.util.List;
 

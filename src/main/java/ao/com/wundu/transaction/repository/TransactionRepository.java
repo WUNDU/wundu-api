@@ -1,8 +1,9 @@
-package ao.com.wundu.transaciton.repository;
+package ao.com.wundu.transaction.repository;
 
-import ao.com.wundu.transaciton.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import ao.com.wundu.transaction.entity.Transaction;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package ao.com.wundu.transaciton.dtos;
+package ao.com.wundu.transaction.dtos;
 
 import ao.com.wundu.category.dto.CategoryResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;

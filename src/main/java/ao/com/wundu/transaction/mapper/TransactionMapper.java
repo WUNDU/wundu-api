@@ -1,10 +1,11 @@
-package ao.com.wundu.transaciton.mapper;
+package ao.com.wundu.transaction.mapper;
 
 import ao.com.wundu.category.dto.CategoryResponse;
 import ao.com.wundu.category.mapper.CategoryMapper;
-import ao.com.wundu.transaciton.dtos.TransactionRequest;
-import ao.com.wundu.transaciton.dtos.TransactionResponse;
-import ao.com.wundu.transaciton.entity.Transaction;
+import ao.com.wundu.transaction.dtos.TransactionRequest;
+import ao.com.wundu.transaction.dtos.TransactionResponse;
+import ao.com.wundu.transaction.entity.Transaction;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

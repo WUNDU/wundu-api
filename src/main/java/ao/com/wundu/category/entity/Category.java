@@ -1,9 +1,10 @@
 package ao.com.wundu.category.entity;
 
-import ao.com.wundu.transaciton.entity.Transaction;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import ao.com.wundu.transaction.entity.Transaction;
 
 @Entity
 @Table(name = "categories")

@@ -1,4 +1,4 @@
-package ao.com.wundu.transaciton.entity;
+package ao.com.wundu.transaction.entity;
 
 import ao.com.wundu.category.entity.Category;
 import jakarta.persistence.*;
