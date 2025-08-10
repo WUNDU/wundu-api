@@ -6,5 +6,5 @@ import ao.com.wundu.report.dtos.MonthlyReportResponse;
 
 public interface ReportService {
     CategoryReportResponse getCategorySpendingReport(CategoryReportRequest request);
-    MonthlyReportResponse getMonthlySpendingReport(String userId, String date); // date = "YYYY-MM-DD" (usa mês desse dia)
+    MonthlyReportResponse getMonthlySpendingReport(String userId, String date);
 }
