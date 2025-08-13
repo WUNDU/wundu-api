@@ -20,8 +20,10 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private TransactionReportRepository transactionReportRepository;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -30,19 +32,18 @@ public class ReportServiceImpl implements ReportService {
         ensureUserExists(request.userId());
         ensureCategoryExists(request.categoryId());
 
-        LocalDate date = parseAndValidateDate(request.date());
-        LocalDate startOfMonth = date.withDayOfMonth(1);
-        LocalDate endOfMonth = date.withDayOfMonth(date.lengthOfMonth());
+        LocalDate endDate = parseAndValidateDate(request.date());
+        LocalDate startDate = endDate.minusMonths(1);
 
         Double totalCategorySpent = transactionReportRepository.sumSpentByUserCategoryAndMonth(
-                request.userId(), request.categoryId(), startOfMonth, endOfMonth);
+                request.userId(), request.categoryId(), startDate, endDate);
 
         Double totalMonthSpent = transactionReportRepository.sumTotalSpentByUserAndMonth(
-                request.userId(), startOfMonth, endOfMonth);
+                request.userId(), startDate, endDate);
 
         double percentage = 0;
         if (totalMonthSpent != null && totalMonthSpent != 0) {
-            percentage = (totalCategorySpent / totalMonthSpent) * 100;
+            percentage = ((totalCategorySpent / totalMonthSpent) * 10000.0) / 100.0;
         }
 
         return new CategoryReportResponse(
@@ -58,23 +59,19 @@ public class ReportServiceImpl implements ReportService {
     public MonthlyReportResponse getMonthlySpendingReport(String userId, String dateStr) {
         ensureUserExists(userId);
 
-        LocalDate date = parseAndValidateDate(dateStr);
-        LocalDate startOfMonth = date.withDayOfMonth(1);
-        LocalDate endOfMonth = date.withDayOfMonth(date.lengthOfMonth());
+        LocalDate endDate = parseAndValidateDate(dateStr);
+        LocalDate startDate = endDate.minusMonths(1);
 
-        // total do mês
-        Double totalMonthSpent = transactionReportRepository.sumTotalSpentByUserAndMonth(userId, startOfMonth, endOfMonth);
+        Double totalMonthSpent = transactionReportRepository.sumTotalSpentByUserAndMonth(userId, startDate, endDate);
         if (totalMonthSpent == null) totalMonthSpent = 0.0;
 
-        // por categoria
-        List<CategorySpendDto> grouped = transactionReportRepository.sumSpentGroupedByCategory(userId, startOfMonth, endOfMonth);
+        List<CategorySpendDto> grouped = transactionReportRepository.sumSpentGroupedByCategory(userId, startDate, endDate);
 
-        // monta lista com percentagens
         List<MonthlyReportResponse.CategorySpendWithPercentage> categories = new ArrayList<>();
         for (CategorySpendDto dto : grouped) {
             double pct = 0;
             if (totalMonthSpent != 0) {
-                pct = (dto.totalSpent() / totalMonthSpent) * 100;
+                pct = Math.round((dto.totalSpent() / totalMonthSpent) * 10000.0) / 100.0;
             }
             categories.add(new MonthlyReportResponse.CategorySpendWithPercentage(
                     dto.categoryId(),
@@ -84,12 +81,11 @@ public class ReportServiceImpl implements ReportService {
             ));
         }
 
-        String monthLabel = String.format("%04d-%02d", date.getYear(), date.getMonthValue());
-
+        String monthLabel = String.format("%04d-%02d", endDate.getYear(), endDate.getMonthValue());
         return new MonthlyReportResponse(userId, monthLabel, totalMonthSpent, categories);
     }
 
-    // helpers
+    // Helpers
     private void ensureUserExists(String userId) {
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("Usuário não encontrado");

@@ -8,3 +8,4 @@ public interface ReportService {
     CategoryReportResponse getCategorySpendingReport(CategoryReportRequest request);
     MonthlyReportResponse getMonthlySpendingReport(String userId, String date);
 }
+

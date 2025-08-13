@@ -11,20 +11,8 @@ import java.util.List;
 
 public interface TransactionReportRepository extends JpaRepository<Transaction, String> {
 
-    /**
-     * Soma dos gastos de um usuário numa categoria entre start e end.
-     * Tratamos como "gasto" quando:
-     *  - amount < 0  (então somamos -amount para ficar positivo)
-     *  - ou LOWER(type) LIKE '%exp%' (ex.: expend, expense) -> somamos amount (pos/neg)
-     */
     @Query("""
-        SELECT COALESCE(SUM(
-            CASE
-                WHEN t.amount < 0 THEN -t.amount
-                WHEN LOWER(t.type) LIKE '%exp%' THEN ABS(t.amount)
-                ELSE 0
-            END
-        ), 0)
+        SELECT COALESCE(SUM(ABS(t.amount)), 0)
         FROM Transaction t
         WHERE t.userId = :userId
           AND t.category.id = :categoryId
@@ -35,17 +23,8 @@ public interface TransactionReportRepository extends JpaRepository<Transaction, 
                                           @Param("start") LocalDate start,
                                           @Param("end") LocalDate end);
 
-    /**
-     * Soma total dos gastos do usuário no mês (usar mesma lógica de detectar gasto).
-     */
     @Query("""
-        SELECT COALESCE(SUM(
-            CASE
-                WHEN t.amount < 0 THEN -t.amount
-                WHEN LOWER(t.type) LIKE '%exp%' THEN ABS(t.amount)
-                ELSE 0
-            END
-        ), 0)
+        SELECT COALESCE(SUM(ABS(t.amount)), 0)
         FROM Transaction t
         WHERE t.userId = :userId
           AND t.transactionDate BETWEEN :start AND :end
@@ -54,21 +33,11 @@ public interface TransactionReportRepository extends JpaRepository<Transaction, 
                                        @Param("start") LocalDate start,
                                        @Param("end") LocalDate end);
 
-    /**
-     * Agrupa por categoria e retorna (categoryId, categoryName, totalSpentInCategory)
-     * Usamos um DTO projection (CategorySpendDto).
-     */
     @Query("""
         SELECT new ao.com.wundu.report.dtos.CategorySpendDto(
             t.category.id,
             t.category.name,
-            COALESCE(SUM(
-                CASE
-                    WHEN t.amount < 0 THEN -t.amount
-                    WHEN LOWER(t.type) LIKE '%exp%' THEN ABS(t.amount)
-                    ELSE 0
-                END
-            ), 0)
+            COALESCE(SUM(ABS(t.amount)), 0)
         )
         FROM Transaction t
         WHERE t.userId = :userId

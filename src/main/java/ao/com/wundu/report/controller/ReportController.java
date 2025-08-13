@@ -3,6 +3,7 @@ package ao.com.wundu.report.controller;
 import ao.com.wundu.report.dtos.CategoryReportRequest;
 import ao.com.wundu.report.dtos.CategoryReportResponse;
 import ao.com.wundu.report.dtos.MonthlyReportResponse;
+import ao.com.wundu.report.dtos.MonthlyReportRequest;
 import ao.com.wundu.report.service.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Reports", description = "Relatórios de gastos por categoria")
 @RestController
 @RequestMapping("api/v1/reports")
+@Tag(name = "Reports", description = "Relatórios de gastos por categoria")
 public class ReportController {
 
     @Autowired
@@ -28,8 +30,9 @@ public class ReportController {
 
     @Operation(summary = "Relatório mensal completo (soma por categoria + total + porcentagens)")
     @PostMapping("/monthly")
-    public ResponseEntity<MonthlyReportResponse> getMonthlyReport(@RequestBody @Valid CategoryReportRequest request) {
+    public ResponseEntity<MonthlyReportResponse> getMonthlyReport(@RequestBody @Valid MonthlyReportRequest request) {
         MonthlyReportResponse response = reportService.getMonthlySpendingReport(request.userId(), request.date());
         return ResponseEntity.ok(response);
     }
 }
+
