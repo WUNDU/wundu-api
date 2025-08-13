@@ -33,14 +33,17 @@ public class UserCategoryLimitServiceImpl implements UserCategoryLimitService {
             .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada"));
 
         UserCategoryLimit limit = limitRepository.findByUserIdAndCategoryId(user.getId(), category.getId())
-            .orElse(new UserCategoryLimit());
+            .orElse(null);
 
-        limit.setUser(user);
-        limit.setCategory(category);
-        limit.setMonthlyLimit(request.monthlyLimit());
-
+        if (limit != null) {
+            limit.setMonthlyLimit(request.monthlyLimit());
+        } else {
+            limit = new UserCategoryLimit();
+            limit.setUser(user);
+            limit.setCategory(category);
+            limit.setMonthlyLimit(request.monthlyLimit());
+        }
         limitRepository.save(limit);
-
         return new UserCategoryLimitResponse(
             limit.getId(), user.getId(), category.getId(), limit.getMonthlyLimit()
         );
