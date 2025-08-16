@@ -1,6 +1,3 @@
-server:
-  port: 8081
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/demo_wundu?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Africa/Luanda
@@ -28,3 +25,7 @@ springdoc:
     enabled: true
   packages-to-scan: ao.com.wundu
   paths-to-match: /api/**
+
+
+server:
+  port: 8089
