@@ -3,4 +3,4 @@ spring:
     name: wundu-api
 
   profiles:
-    active: local
+    active: dev

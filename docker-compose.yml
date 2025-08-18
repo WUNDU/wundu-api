@@ -16,7 +16,7 @@ services:
     networks:
       - wundu-network
   app:
-    imege: wundu-app
+    image: wundu-app
     restart: always
     build: .
     working_dir: /app
@@ -25,6 +25,7 @@ services:
       SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/wundu-db
       SPRING.DATASOURCE.USERNAME: wundu
       SPRING.DATASOURCE.PASSWORD: wundu
+      SPRING_PROFILES_ACTIVE: dev
     ports:
       - 8080:8080
     command: mvn spring-boot:run
@@ -34,5 +35,5 @@ services:
       - wundu-network
 
 networks:
-  wakasoft-network:
+  wundu-network:
     driver: bridge
