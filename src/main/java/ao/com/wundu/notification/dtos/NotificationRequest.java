@@ -8,5 +8,8 @@ public record NotificationRequest() {
      String user_id,
 
      @NotBlank(message = "O title da notificação é obrigatóiro")
-     String title
+     String title,
+
+     @NotBlank(message = "O id da categoria é obrigatório")
+     String category_id
 }
