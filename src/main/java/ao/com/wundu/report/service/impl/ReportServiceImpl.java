@@ -8,7 +8,9 @@ import ao.com.wundu.report.dtos.CategorySpendDto;
 import ao.com.wundu.report.dtos.MonthlyReportResponse;
 import ao.com.wundu.report.repository.TransactionReportRepository;
 import ao.com.wundu.report.service.ReportService;
+import ao.com.wundu.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -88,13 +90,13 @@ public class ReportServiceImpl implements ReportService {
     // Helpers
     private void ensureUserExists(String userId) {
         if (!userRepository.existsById(userId)) {
-            throw new IllegalArgumentException("Usuário não encontrado");
+            throw new ResourceNotFoundException("Usuário não encontrado");
         }
     }
 
     private void ensureCategoryExists(String categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
-            throw new IllegalArgumentException("Categoria não encontrada");
+            throw new ResourceNotFoundException("Categoria não encontrada");
         }
     }
 
@@ -103,10 +105,10 @@ public class ReportServiceImpl implements ReportService {
         try {
             date = LocalDate.parse(dateStr);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Data inválida. Use o formato YYYY-MM-DD");
+            throw new ResourceNotFoundException("Data inválida. Use o formato YYYY-MM-DD", HttpStatus.BAD_REQUEST);
         }
         if (date.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("A data não pode ser no futuro");
+            throw new ResourceNotFoundException("A data não pode ser no futuro", HttpStatus.BAD_REQUEST);
         }
         return date;
     }
