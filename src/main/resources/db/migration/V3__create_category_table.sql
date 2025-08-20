@@ -1,7 +1,7 @@
 -- 1. TABELA DE CATEGORIAS
 CREATE TABLE categories (
     id VARCHAR(255) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL
 );
 
 COMMENT ON TABLE categories IS 'Tabela de categorias de transações (ex: Alimentação, Transporte)';

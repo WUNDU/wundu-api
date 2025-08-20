@@ -1,14 +1,12 @@
 server:
   port: 8081
+  address: 0.0.0.0
 
 spring:
-  application:
-    name: wundu-api
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/demo_wundu?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Africa/Luanda
+    url: jdbc:postgresql://localhost:5432/db_wundu?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Africa/Luanda
     username: postgres
-    password: 12345
+    password: wundu12345
     driver-class-name: org.postgresql.Driver
     jpa:
       database-platform: org.hibernate.dialect.PostgreSQLDialect
