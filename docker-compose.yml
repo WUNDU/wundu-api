@@ -5,30 +5,27 @@ services:
     image: postgres:16.3
     restart: always
     environment:
-      TZ: Africa\Luanda
+      TZ: Africa/Luanda
       POSTGRES_USER: wundu
       POSTGRES_PASSWORD: wundu
       POSTGRES_DB: wundu-db
     ports:
       - 5433:5432
-    expose:
-      - 5432
     networks:
       - wundu-network
+
   app:
     image: wundu-app
     restart: always
     build: .
-    working_dir: /app
     environment:
-      TZ: Africa\Luanda
-      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/wundu-db
-      SPRING.DATASOURCE.USERNAME: wundu
-      SPRING.DATASOURCE.PASSWORD: wundu
+      TZ: Africa/Luanda
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/wundu-db
+      SPRING_DATASOURCE_USERNAME: wundu
+      SPRING_DATASOURCE_PASSWORD: wundu
       SPRING_PROFILES_ACTIVE: dev
     ports:
       - 8080:8080
-    command: mvn spring-boot:run
     depends_on:
       - db
     networks:
