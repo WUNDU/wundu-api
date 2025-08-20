@@ -1,3 +1,12 @@
-FROM openjdk:17-jdk-alpine
-COPY target/*.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+# Etapa 1: Build da aplicação
+FROM maven:3.9.9-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Etapa 2: Container final
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
