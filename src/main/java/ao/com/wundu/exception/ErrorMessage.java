@@ -32,17 +32,12 @@ public class ErrorMessage {
     }
 
     public ErrorMessage(HttpServletRequest request, HttpStatus status, String message, BindingResult result) {
-        this.path = request.getRequestURI();
-        this.method = request.getMethod();
-        this.status = status.value();
-        this.statusText = status.getReasonPhrase();
-        this.message = message;
+        this(request, status, message);
         addErros(result);
     }
 
     private void addErros(BindingResult result) {
         this.erros = new HashMap<>();
-
         for (FieldError fieldError : result.getFieldErrors()) {
             this.erros.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
@@ -51,7 +46,6 @@ public class ErrorMessage {
     public String getPath() {
         return path;
     }
-
     public void setPath(String path) {
         this.path = path;
     }
@@ -59,7 +53,6 @@ public class ErrorMessage {
     public String getMethod() {
         return method;
     }
-
     public void setMethod(String method) {
         this.method = method;
     }
@@ -67,7 +60,6 @@ public class ErrorMessage {
     public int getStatus() {
         return status;
     }
-
     public void setStatus(int status) {
         this.status = status;
     }
@@ -75,7 +67,6 @@ public class ErrorMessage {
     public String getStatusText() {
         return statusText;
     }
-
     public void setStatusText(String statusText) {
         this.statusText = statusText;
     }
@@ -83,7 +74,6 @@ public class ErrorMessage {
     public String getMessage() {
         return message;
     }
-
     public void setMessage(String message) {
         this.message = message;
     }
@@ -91,7 +81,6 @@ public class ErrorMessage {
     public Map<String, String> getErros() {
         return erros;
     }
-
     public void setErros(Map<String, String> erros) {
         this.erros = erros;
     }

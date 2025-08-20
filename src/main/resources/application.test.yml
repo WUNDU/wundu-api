@@ -4,9 +4,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/db_wundu?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Africa/Luanda
+    url: jdbc:postgresql://localhost:5432/demo_wundu?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Africa/Luanda
     username: postgres
-    password: wundu12345
+    password: 12345
     driver-class-name: org.postgresql.Driver
     jpa:
       database-platform: org.hibernate.dialect.PostgreSQLDialect
