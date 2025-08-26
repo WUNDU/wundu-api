@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Limites", description = "Definição e consulta de limites mensais por categoria para cada usuário")
+@Tag(name = "Limits", description = "Definição e consulta de limites mensais por categoria para cada usuário")
 @RestController
 @RequestMapping("api/v1/limits")
 public class UserCategoryLimitController {

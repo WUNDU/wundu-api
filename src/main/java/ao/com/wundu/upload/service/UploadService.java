@@ -6,4 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface UploadService {
 
     UploadFileResponse uploadFile(MultipartFile file);
+
+    byte[] loadFileAsBytes(String fileName);
 }
