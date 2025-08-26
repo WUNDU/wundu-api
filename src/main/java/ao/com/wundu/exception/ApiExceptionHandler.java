@@ -20,12 +20,15 @@ public class ApiExceptionHandler {
     private static final String RED = "\u001B[31m";
     private static final String YELLOW = "\u001B[33m";
     private static final String RESET = "\u001B[0m";
-
     private static final String BLUE = "\u001B[34m";
+
     private static final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorMessage> accessDeniedException(AccessDeniedException ex, HttpServletRequest request, BindingResult result) {
+    public ResponseEntity<ErrorMessage> accessDeniedException(
+            AccessDeniedException ex,
+            HttpServletRequest request,
+            BindingResult result) {
 
         logger.error("API ERROR - ", ex);
 
@@ -36,7 +39,10 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request, BindingResult result) {
+    public ResponseEntity<ErrorMessage> methodArgumentNotValidException(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request,
+            BindingResult result) {
 
         List<String> errors = result.getFieldErrors().stream()
                 .map(fieldError -> String.format(
@@ -56,22 +62,13 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, "Campo(a) invalido(a)", result));
     }
 
-//    @ExceptionHandler(UsernameUniqueViolationException.class)
-//    public ResponseEntity<ErrorMessage> usernameUniqueViolationException(RuntimeException ex, HttpServletRequest request) {
-//
-//        logger.error("API ERROR - ", ex);
-//
-//        return ResponseEntity
-//                .status(HttpStatus.CONFLICT)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
-//    }
-
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorMessage> resourceAccessException(RuntimeException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorMessage> resourceAccessException(
+            ResourceNotFoundException ex,
+            HttpServletRequest request) {
 
         logger.error(
-                "\n{}🔴 API ERROR -  ERRO DE ACESSO À RECURSO{}\n\n{}Mensagem:{} {}{}\n{}Origem:{} {}{}\n{}Stacktrace:{}\n{}\n",
+                "\n{}🔴 API ERROR{}\n\n{}Mensagem:{} {}{}\n{}Origem:{} {}{}\n{}Stacktrace:{}\n{}\n",
                 RED, RESET,
                 BLUE, RESET, YELLOW + ex.getMessage() + RESET,
                 BLUE, RESET, YELLOW + ex.getClass().getName() + RESET,
@@ -79,8 +76,8 @@ public class ApiExceptionHandler {
         );
 
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
+                .status(ex.getStatus())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
+                .body(new ErrorMessage(request, ex.getStatus(), ex.getMessage()));
     }
 }

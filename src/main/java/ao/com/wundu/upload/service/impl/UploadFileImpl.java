@@ -1,11 +1,11 @@
 package ao.com.wundu.upload.service.impl;
 
+import ao.com.wundu.exception.ResourceNotFoundException;
 import ao.com.wundu.upload.dtos.UploadFileResponse;
 import ao.com.wundu.upload.service.UploadService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
@@ -31,24 +31,20 @@ public class UploadFileImpl implements UploadService {
     @Override
     public UploadFileResponse uploadFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Arquivo inválido ou ausente");
+            throw new ResourceNotFoundException("Arquivo inválido ou ausente", HttpStatus.BAD_REQUEST);
         }
+
         String contentType = file.getContentType();
         if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de arquivo não suportado");
+            throw new ResourceNotFoundException("Tipo de arquivo não suportado", HttpStatus.BAD_REQUEST);
         }
 
         try {
-<<<<<<< HEAD
-            String originalName = Path.of(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()).getFileName().toString();
-            String fileName = UUID.randomUUID().toString() + "_" + originalName;
-=======
             String originalName = Path.of(file.getOriginalFilename() == null
                     ? "file"
                     : file.getOriginalFilename()).getFileName().toString();
 
             String fileName = UUID.randomUUID() + "_" + originalName;
->>>>>>> 98cd802 (:construction: feat(uploads -> leadFileAsBytes): Modelo de leitura para o ocr.)
 
             Path uploadPath = Paths.get(UPLOAD_DIR);
             if (!Files.exists(uploadPath)) {
@@ -66,7 +62,7 @@ public class UploadFileImpl implements UploadService {
             return new UploadFileResponse(fileName, contentType, file.getSize(), downloadUri);
 
         } catch (IOException e) {
-            throw new RuntimeException("Falha ao salvar o arquivo", e);
+            throw new ResourceNotFoundException("Falha ao salvar o arquivo", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
