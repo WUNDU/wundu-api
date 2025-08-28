@@ -7,5 +7,5 @@ public interface UploadService {
 
     UploadFileResponse uploadFile(MultipartFile file);
 
-    byte[] loadFileAsBytes(String fileName);
+    byte[] uploadOcr(MultipartFile file);
 }

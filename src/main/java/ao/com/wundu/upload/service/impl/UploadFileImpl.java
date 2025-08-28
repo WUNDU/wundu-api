@@ -26,18 +26,9 @@ public class UploadFileImpl implements UploadService {
         "image/jpeg"
     );
 
-    private static final Set<String> ALLOWED_EXTENSIONS = Set.of("pdf", "png", "jpeg", "jpg");
-
     @Override
     public UploadFileResponse uploadFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new ResourceNotFoundException("Arquivo inválido ou ausente", HttpStatus.BAD_REQUEST);
-        }
-
-        String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
-            throw new ResourceNotFoundException("Tipo de arquivo não suportado", HttpStatus.BAD_REQUEST);
-        }
+        String contentType = validate(file);
 
         try {
             String originalName = Path.of(file.getOriginalFilename() == null
@@ -67,31 +58,25 @@ public class UploadFileImpl implements UploadService {
     }
 
     @Override
-    public byte[] loadFileAsBytes(String fileName) {
-        if (fileName == null || fileName.isBlank()) {
-            throw new ResourceNotFoundException("Nome do arquivo não informado", HttpStatus.BAD_REQUEST);
-        }
-
-        Path filePath = Paths.get(UPLOAD_DIR).resolve(fileName);
-
-        if (!Files.exists(filePath)) {
-            throw new ResourceNotFoundException("Arquivo não encontrado: " + fileName, HttpStatus.NOT_FOUND);
-        }
-
-        String fileExtension = getFileExtension(fileName).toLowerCase();
-        if (!ALLOWED_EXTENSIONS.contains(fileExtension)) {
-            throw new ResourceNotFoundException("Tipo de arquivo não suportado: ." + fileExtension, HttpStatus.BAD_REQUEST);
-        }
-
+    public byte[] uploadOcr(MultipartFile file) {
+        validate(file);
         try {
-            return Files.readAllBytes(filePath);
+            return file.getBytes();
         } catch (IOException e) {
-            throw new ResourceNotFoundException("Erro ao ler o arquivo: " + fileName, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResourceNotFoundException("Erro ao ler o arquivo em memória", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private String getFileExtension(String fileName) {
-        int lastDot = fileName.lastIndexOf('.');
-        return (lastDot != -1) ? fileName.substring(lastDot + 1) : "";
+    private String validate(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new ResourceNotFoundException("Arquivo inválido ou ausente", HttpStatus.BAD_REQUEST);
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
+            throw new ResourceNotFoundException("Tipo de arquivo não suportado", HttpStatus.BAD_REQUEST);
+        }
+
+        return contentType;
     }
 }
