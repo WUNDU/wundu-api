@@ -31,3 +31,9 @@ springdoc:
     enabled: true
   packages-to-scan: ao.com.wundu
   paths-to-match: /api/**
+
+huggingface:
+  api:
+    token: "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"
+  model:
+    id: "microsoft/trocr-large-printed"
