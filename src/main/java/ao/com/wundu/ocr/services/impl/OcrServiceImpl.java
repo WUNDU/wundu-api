@@ -20,13 +20,13 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class OcrServiceImpl implements OcrService {
+
+    private static final long MAX_SIZE_MB = 10 * 1024 * 1024;
 
     private final RestTemplate restTemplate;
     private final OcrRepository ocrRepository;
@@ -48,32 +48,41 @@ public class OcrServiceImpl implements OcrService {
     @Override
     public OcrResponse processOcr(MultipartFile file) {
         byte[] bytes = uploadService.uploadOcr(file);
-        String contentType = file.getContentType() == null ? "" : file.getContentType().toLowerCase();
-        String originalName = file.getOriginalFilename() == null ? "file" : file.getOriginalFilename();
+        String contentType = Optional.ofNullable(file.getContentType()).orElse("").toLowerCase();
+        String originalName = Optional.ofNullable(file.getOriginalFilename()).orElse("file");
         List<String> pages = new ArrayList<>();
+
         try {
-            if ("application/pdf".equalsIgnoreCase(contentType) || originalName.toLowerCase().endsWith(".pdf")) {
-                try (PDDocument doc = PDDocument.load(bytes)) {
-                    PDFRenderer renderer = new PDFRenderer(doc);
-                    int pagesCount = doc.getNumberOfPages();
-                    for (int i = 0; i < pagesCount; i++) {
-                        BufferedImage image = renderer.renderImageWithDPI(i, 300);
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        ImageIO.write(image, "png", baos);
-                        baos.flush();
-                        byte[] imgBytes = baos.toByteArray();
-                        baos.close();
-                        String pageText = callHuggingFace(imgBytes);
-                        pages.add(pageText);
+            boolean isPdf = "application/pdf".equalsIgnoreCase(contentType) || originalName.toLowerCase().endsWith(".pdf");
+
+            if (isPdf) {
+                if (file.getSize() <= MAX_SIZE_MB) {
+                    String text = callHuggingFace(bytes);
+                    pages.add(text);
+                } else {
+                    try (PDDocument doc = PDDocument.load(bytes)) {
+                        PDFRenderer renderer = new PDFRenderer(doc);
+                        for (int i = 0; i < doc.getNumberOfPages(); i++) {
+                            BufferedImage image = renderer.renderImageWithDPI(i, 300);
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            ImageIO.write(image, "png", baos);
+                            baos.flush();
+                            byte[] imgBytes = baos.toByteArray();
+                            baos.close();
+                            String pageText = callHuggingFace(imgBytes);
+                            pages.add(pageText);
+                        }
                     }
                 }
             } else if (contentType.startsWith("image/") || originalName.matches("(?i).*\\.(png|jpe?g)$")) {
                 String text = callHuggingFace(bytes);
                 pages.add(text);
             }
+
             String fullText = pages.stream().filter(Objects::nonNull).collect(Collectors.joining("\n\n"));
             OcrRecord record = new OcrRecord(originalName, contentType, fullText, file.getSize());
             OcrRecord saved = ocrRepository.save(record);
+
             return new OcrResponse(saved.getId(), saved.getFileName(), saved.getContentType(), saved.getFileSize(), saved.getExtractedText());
         } catch (IOException e) {
             throw new ResourceNotFoundException("Erro ao processar arquivo para OCR", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -85,13 +94,17 @@ public class OcrServiceImpl implements OcrService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(hfToken);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
         HttpEntity<byte[]> request = new HttpEntity<>(payload, headers);
         ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
         if (!resp.getStatusCode().is2xxSuccessful()) {
-            throw new ResourceNotFoundException("Erro no serviço OCR: status " + resp.getStatusCodeValue(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResourceNotFoundException("Erro no serviço OCR: status " + resp.getStatusCode().value(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         String body = resp.getBody();
         if (body == null) return "";
+
         try {
             JsonNode node = mapper.readTree(body);
             if (node.isArray()) {
