@@ -1,32 +1,30 @@
--- V003 - Criação da tabela de transações financeiras
+-- V003 - Criação da tabela de OCR RECORDS
 
-CREATE TABLE transactions (
+CREATE TABLE ocr_records (
     id VARCHAR(255) PRIMARY KEY,
-    user_id VARCHAR(255) NOT NULL REFERENCES users(id),
-    category_id VARCHAR(255) REFERENCES categories(id),
-    type VARCHAR(20) NOT NULL CHECK (type IN ('income','expense')),
-    source VARCHAR(20) CHECK (source IN ('pdf','image','csv','xls','bank_sync')),
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending','confirmed','not_recognized','error_ocr')),
-    amount NUMERIC(12,2) NOT NULL,
-    description TEXT,
-    transaction_date DATE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_id VARCHAR(255) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    content_type VARCHAR(100) NOT NULL,
+    file_size BIGINT NOT NULL,
+    extracted_text TEXT,
+    status VARCHAR(25) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_ocr_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 -- Índices
-CREATE INDEX idx_transactions_user_id ON transactions(user_id);
-CREATE INDEX idx_transactions_category_id ON transactions(category_id);
-CREATE INDEX idx_transactions_date ON transactions(transaction_date);
+CREATE INDEX idx_ocr_records_user_id ON ocr_records(user_id);
+CREATE INDEX idx_ocr_records_status ON ocr_records(status);
 
 -- Comentários
-COMMENT ON TABLE transactions IS 'Transações financeiras (receitas e despesas) associadas ao usuário';
-COMMENT ON COLUMN transactions.id IS 'Identificador único da transação';
-COMMENT ON COLUMN transactions.user_id IS 'Referência ao usuário dono da transação';
-COMMENT ON COLUMN transactions.category_id IS 'Categoria associada à transação';
-COMMENT ON COLUMN transactions.type IS 'Tipo: income (receita) ou expense (despesa)';
-COMMENT ON COLUMN transactions.source IS 'Origem: pdf, image, csv, xls, bank_sync';
-COMMENT ON COLUMN transactions.status IS 'Status do processamento OCR/NLP';
-COMMENT ON COLUMN transactions.amount IS 'Valor da transação';
-COMMENT ON COLUMN transactions.description IS 'Descrição detalhada da transação';
-COMMENT ON COLUMN transactions.transaction_date IS 'Data efetiva da transação';
-COMMENT ON COLUMN transactions.created_at IS 'Data/hora em que a transação foi registrada';
+COMMENT ON TABLE ocr_records IS 'Histórico de documentos enviados para OCR';
+COMMENT ON COLUMN ocr_records.id IS 'Identificador único do OCR record';
+COMMENT ON COLUMN ocr_records.user_id IS 'Usuário que fez o upload';
+COMMENT ON COLUMN ocr_records.file_name IS 'Nome original do arquivo';
+COMMENT ON COLUMN ocr_records.content_type IS 'Formato/MIME do arquivo';
+COMMENT ON COLUMN ocr_records.file_size IS 'Tamanho do arquivo em bytes';
+COMMENT ON COLUMN ocr_records.extracted_text IS 'Texto extraído pelo OCR';
+COMMENT ON COLUMN ocr_records.status IS 'Status: pending, processed, error';
+COMMENT ON COLUMN ocr_records.created_at IS 'Data/hora do upload';
+

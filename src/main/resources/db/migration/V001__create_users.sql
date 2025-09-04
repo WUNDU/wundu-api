@@ -1,3 +1,5 @@
+-- V002 - Criação da tabela de USERS
+
 -- Tabela de usuários
 CREATE TABLE users (
     id VARCHAR(255) PRIMARY KEY,
@@ -21,6 +23,7 @@ CREATE INDEX idx_users_phone_number ON users(phone_number);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_plan_type ON users(plan_type);
 CREATE INDEX idx_users_created_at ON users(created_at);
+CREATE INDEX idx_users_is_active ON users(is_active);
 
 -- Trigger para atualizar updated_at
 CREATE OR REPLACE FUNCTION update_users_updated_at()
