@@ -80,4 +80,23 @@ public class ApiExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, ex.getStatus(), ex.getMessage()));
     }
+
+    @ExceptionHandler(BusinessValidationException.class)
+    public ResponseEntity<ErrorMessage> businessValidationException(
+            BusinessValidationException ex,
+            HttpServletRequest request) {
+
+        logger.error(
+                "\n{}🔴 API ERROR{}\n\n{}Mensagem:{} {}{}\n{}Origem:{} {}{}\n{}Stacktrace:{}\n{}\n",
+                RED, RESET,
+                BLUE, RESET, YELLOW + ex.getMessage() + RESET,
+                BLUE, RESET, YELLOW + ex.getClass().getName() + RESET,
+                BLUE, RESET
+        );
+
+        return ResponseEntity
+                .status(ex.getStatus())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, ex.getStatus(), ex.getMessage()));
+    }
 }

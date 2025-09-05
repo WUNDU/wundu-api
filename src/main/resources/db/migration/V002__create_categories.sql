@@ -3,7 +3,7 @@
 CREATE TABLE categories (
     id VARCHAR(255) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    type VARCHAR(20) NOT NULL CHECK (type IN ('default','custom'))
+    type VARCHAR(20) NOT NULL CHECK (type IN ('default','custom')),
     is_active BOOLEAN DEFAULT true
 );
 

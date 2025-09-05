@@ -1,5 +1,6 @@
 package ao.com.wundu.usuario.service.impl;
 
+import ao.com.wundu.exception.BusinessValidationException;
 import ao.com.wundu.exception.ResourceNotFoundException;
 import ao.com.wundu.usuario.dto.UserRequest;
 import ao.com.wundu.usuario.dto.UserResponse;
@@ -28,6 +29,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse create(UserRequest request) {
+
+        if (userRepository.existsByEmail(request.email())) {
+            throw new BusinessValidationException("Já existe um usuário cadastrado com este e-mail");
+        }
+
+        if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
+            throw new BusinessValidationException("Já existe um usuário cadastrado com este telefone");
+        }
+
         User user = userMapper.toUser(request);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

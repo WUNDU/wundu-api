@@ -69,7 +69,7 @@ public class UserController {
             }
     )
     @GetMapping()
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponse>> findAll() {
         List<UserResponse> responses = userService.findAll();
 

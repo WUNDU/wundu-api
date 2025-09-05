@@ -1,8 +1,10 @@
 package ao.com.wundu.usuario.entity;
 
+import ao.com.wundu.usuario.enums.PlanType;
 import ao.com.wundu.usuario.enums.Role;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -29,7 +31,11 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 25)
-    private Role role = Role.ROLE_CLIENTE;
+    private Role role = Role.CLIENTE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "plan_type", length = 10)
+    private PlanType planType = PlanType.FREE;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -38,36 +44,53 @@ public class User {
     private String modifiedBy;
     private Boolean isActive = true;
 
+    @Column(name = "plan_start")
+    private Timestamp planStart;
+
+    @Column(name = "plan_end")
+    private Timestamp planEnd;
+
+    @Column(name = "is_trial")
+    private Boolean isTrial = false;
+
     public User() {
     }
 
-    public User(String id, String name, String email, String password, String phoneNumber, Role role, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive) {
+    public User(String id, String name, String email, String password, String phoneNumber, Role role, PlanType planType, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, Timestamp planStart, Timestamp planEnd, Boolean isTrial) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.role = role;
+        this.planType = planType;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.lastLogin = lastLogin;
         this.createBy = createBy;
         this.modifiedBy = modifiedBy;
         this.isActive = isActive;
+        this.planStart = planStart;
+        this.planEnd = planEnd;
+        this.isTrial = isTrial;
     }
 
-    public User(String name, String email, String password, String phoneNumber, Role role, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive) {
+    public User(String name, String email, String password, String phoneNumber, Role role, PlanType planType, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, Timestamp planStart, Timestamp planEnd, Boolean isTrial) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.role = role;
+        this.planType = planType;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.lastLogin = lastLogin;
         this.createBy = createBy;
         this.modifiedBy = modifiedBy;
         this.isActive = isActive;
+        this.planStart = planStart;
+        this.planEnd = planEnd;
+        this.isTrial = isTrial;
     }
 
     public String getId() {
@@ -164,6 +187,38 @@ public class User {
 
     public void setActive(Boolean active) {
         isActive = active;
+    }
+
+    public PlanType getPlanType() {
+        return planType;
+    }
+
+    public void setPlanType(PlanType planType) {
+        this.planType = planType;
+    }
+
+    public Timestamp getPlanStart() {
+        return planStart;
+    }
+
+    public void setPlanStart(Timestamp planStart) {
+        this.planStart = planStart;
+    }
+
+    public Timestamp getPlanEnd() {
+        return planEnd;
+    }
+
+    public void setPlanEnd(Timestamp planEnd) {
+        this.planEnd = planEnd;
+    }
+
+    public Boolean getTrial() {
+        return isTrial;
+    }
+
+    public void setTrial(Boolean trial) {
+        isTrial = trial;
     }
 
     @Override
