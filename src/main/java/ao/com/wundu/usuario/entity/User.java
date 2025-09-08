@@ -3,6 +3,8 @@ package ao.com.wundu.usuario.entity;
 import ao.com.wundu.usuario.enums.PlanType;
 import ao.com.wundu.usuario.enums.Role;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -37,11 +39,24 @@ public class User {
     @Column(name = "plan_type", length = 10)
     private PlanType planType = PlanType.FREE;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
+
+    @Column(name = "last_login")
     private LocalDateTime lastLogin;
+
+    @Column(name = "created_by")
     private String createBy;
+
+    @Column(name = "modified_by")
     private String modifiedBy;
+
+    @Column(name = "is_active")
     private Boolean isActive = true;
 
     @Column(name = "plan_start")
@@ -56,7 +71,7 @@ public class User {
     public User() {
     }
 
-    public User(String id, String name, String email, String password, String phoneNumber, Role role, PlanType planType, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, Timestamp planStart, Timestamp planEnd, Boolean isTrial) {
+    public User(String id, String name, String email, String password, String phoneNumber, Role role, PlanType planType, Timestamp createdAt, Timestamp updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, Timestamp planStart, Timestamp planEnd, Boolean isTrial) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -75,7 +90,7 @@ public class User {
         this.isTrial = isTrial;
     }
 
-    public User(String name, String email, String password, String phoneNumber, Role role, PlanType planType, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, Timestamp planStart, Timestamp planEnd, Boolean isTrial) {
+    public User(String name, String email, String password, String phoneNumber, Role role, PlanType planType, Timestamp createdAt, Timestamp updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, Timestamp planStart, Timestamp planEnd, Boolean isTrial) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -141,19 +156,19 @@ public class User {
         this.role = role;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 

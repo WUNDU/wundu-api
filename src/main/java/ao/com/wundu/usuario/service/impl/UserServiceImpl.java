@@ -5,14 +5,18 @@ import ao.com.wundu.exception.ResourceNotFoundException;
 import ao.com.wundu.usuario.dto.UserRequest;
 import ao.com.wundu.usuario.dto.UserResponse;
 import ao.com.wundu.usuario.entity.User;
+import ao.com.wundu.usuario.enums.PlanType;
 import ao.com.wundu.usuario.enums.Role;
 import ao.com.wundu.usuario.mapper.UserMapper;
 import ao.com.wundu.usuario.repository.UserRepository;
 import ao.com.wundu.usuario.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -66,9 +70,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> findAll() {
-        List<User> users = userRepository.findAll();
+    public Page<UserResponse> findAll(PlanType plan, Boolean isActive, Timestamp createdAt, Pageable pageable) {
+        Page<User> users = userRepository.searchUsers(plan, isActive, createdAt, pageable);
 
-        return userMapper.toList(users);
+        return users.map(userMapper::toResponse);
     }
 }
