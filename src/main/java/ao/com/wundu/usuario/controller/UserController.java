@@ -3,12 +3,14 @@ package ao.com.wundu.usuario.controller;
 import ao.com.wundu.usuario.dto.UserRequest;
 import ao.com.wundu.usuario.dto.UserResponse;
 import ao.com.wundu.exception.ErrorMessage;
+import ao.com.wundu.usuario.entity.User;
 import ao.com.wundu.usuario.enums.PlanType;
 import ao.com.wundu.usuario.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "WUNDU", description = "Contém todas as operações relativas aos recursos para cadastro, edição, e leitura de um usuário")
@@ -61,7 +64,9 @@ public class UserController {
             }
     )
     @GetMapping("{id}")
-    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENTE') AND #id == authentication.principal.id)")
+    //@PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENTE') AND #id == authentication.principal.id)")
+    //@PreAuthorize("hasAnyRole('ADMIN','CLIENTE')")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('CLIENTE') and #id == principal.id)")
     public ResponseEntity<UserResponse> findById(@PathVariable String id) {
         UserResponse response = userService.findById(id);
 
@@ -69,32 +74,81 @@ public class UserController {
                 .body(response);
     }
 
-    @Operation(summary = "Listar todos os usuários", description = "Requisição exige um Bearer Token. Acesso restrito a ADMIN|CLIENTE",
+    @Operation(
+            summary = "Listar usuários por plano",
+            description = "Retorna uma lista paginada de usuários filtrados pelo tipo de plano (FREE ou PREMIUM).",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Lista de todos usuários encontrados com sucesso",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Parâmetro inválido",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "401", description = "Não autenticado",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "403", description = "Acesso negado (sem permissão)",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)))
+
             }
     )
-    @GetMapping()
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
-    public ResponseEntity<Page<UserResponse>> findAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir,
-            @RequestParam(required = false) PlanType plan,
-            @RequestParam(required = false) Boolean isActive,
-            @RequestParam(required = false) Timestamp createdAt) {
+    @GetMapping("/plan")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<UserResponse> findByPlan(
+            @RequestParam PlanType plan,
+            Pageable pageable ) {
+        return userService.findByPlanType(plan, pageable);
+    }
 
-        Sort sort = sortDir.equalsIgnoreCase("asc")
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+    @Operation(
+            summary = "Listar usuários por status de atividade",
+            description = "Retorna uma lista paginada de usuários filtrados pelo campo isActive (true ou false).",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Parâmetro inválido",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "401", description = "Não autenticado",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "403", description = "Acesso negado (sem permissão)",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)))
 
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<UserResponse> responses = userService.findAll(plan, isActive, createdAt, pageable);
+            }
+    )
+    @GetMapping("/active")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<UserResponse> findByIsActive(
+            @RequestParam Boolean isActive,
+            Pageable pageable ) {
+        return userService.findByIdIsActive(isActive, pageable);
+    }
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(responses);
+    @Operation(
+            summary = "Listar usuários criados após uma data",
+            description = "Retorna uma lista paginada de usuários filtrados pelo campo isActive (true ou false).",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Parâmetro inválido",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "401", description = "Não autenticado",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "403", description = "Acesso negado (sem permissão)",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)))
+
+            }
+    )
+    @GetMapping("/created-after")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<UserResponse> findByCreatedAtAfter(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAt,
+            Pageable pageable) {
+        return userService.findByCreatedAtAfter(createdAt, pageable);
     }
 }

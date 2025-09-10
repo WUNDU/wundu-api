@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, String> {
@@ -22,16 +23,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByEmail(String email);
     boolean existsByPhoneNumber(String phoneNumber);
 
-    @Query("""
-            SELECT u from User u
-            WHERE (:plan IS NULL OR u.planType = :plan)
-            AND (:isActive IS NULL OR u.isActive = :isActive)
-            AND (:createdAt IS NULL OR u.createdAt >= :createdAt)
-            """)
-    Page<User> searchUsers(
-            @Param("plan") PlanType plan,
-            @Param("isActive") Boolean isActive,
-            @Param("createdAt") Timestamp createdAt,
-            Pageable pageable
-    );
+    Page<User> findByPlanType(PlanType plan, Pageable pageable);
+    Page<User> findByIsActive(Boolean isActive, Pageable pageable);
+    Page<User> findByCreatedAtAfter(LocalDateTime createdAt, Pageable pageable);
 }

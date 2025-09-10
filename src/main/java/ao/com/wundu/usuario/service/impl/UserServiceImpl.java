@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -70,9 +71,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserResponse> findAll(PlanType plan, Boolean isActive, Timestamp createdAt, Pageable pageable) {
-        Page<User> users = userRepository.searchUsers(plan, isActive, createdAt, pageable);
+    public Page<UserResponse> findByPlanType(PlanType plan, Pageable pageable) {
+
+        Page<User> users = userRepository.findByPlanType(plan, pageable);
 
         return users.map(userMapper::toResponse);
+    }
+
+    @Override
+    public Page<UserResponse> findByIdIsActive(Boolean isActive, Pageable pageable) {
+        return userRepository.findByIsActive(isActive, pageable)
+                .map(userMapper::toResponse);
+    }
+
+    @Override
+    public Page<UserResponse> findByCreatedAtAfter(LocalDateTime createdAt, Pageable pageable) {
+        return userRepository.findByCreatedAtAfter(createdAt, pageable)
+                .map(userMapper::toResponse);
     }
 }

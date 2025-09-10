@@ -27,16 +27,16 @@ public record UserResponse(
         String phoneNumber,
         String role,
         String planType,
-        Timestamp createdAt,
-        Timestamp updatedAt,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
         //LocalDateTime lastLogin,
         //String createBy,
         //String modifiedBy;
         Boolean isActive,
 
-        Timestamp planStart,
+        LocalDateTime planStart,
 
-        Timestamp planEnd,
+        LocalDateTime planEnd,
         Boolean isTrial
 ) {
 }

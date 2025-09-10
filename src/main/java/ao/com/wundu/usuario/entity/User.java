@@ -41,11 +41,11 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
@@ -60,10 +60,10 @@ public class User {
     private Boolean isActive = true;
 
     @Column(name = "plan_start")
-    private Timestamp planStart;
+    private LocalDateTime planStart;
 
     @Column(name = "plan_end")
-    private Timestamp planEnd;
+    private LocalDateTime planEnd;
 
     @Column(name = "is_trial")
     private Boolean isTrial = false;
@@ -71,7 +71,7 @@ public class User {
     public User() {
     }
 
-    public User(String id, String name, String email, String password, String phoneNumber, Role role, PlanType planType, Timestamp createdAt, Timestamp updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, Timestamp planStart, Timestamp planEnd, Boolean isTrial) {
+    public User(String id, String name, String email, String password, String phoneNumber, Role role, PlanType planType, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, LocalDateTime planStart, LocalDateTime planEnd, Boolean isTrial) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -90,7 +90,7 @@ public class User {
         this.isTrial = isTrial;
     }
 
-    public User(String name, String email, String password, String phoneNumber, Role role, PlanType planType, Timestamp createdAt, Timestamp updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, Timestamp planStart, Timestamp planEnd, Boolean isTrial) {
+    public User(String name, String email, String password, String phoneNumber, Role role, PlanType planType, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, String createBy, String modifiedBy, Boolean isActive, LocalDateTime planStart, LocalDateTime planEnd, Boolean isTrial) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -156,19 +156,19 @@ public class User {
         this.role = role;
     }
 
-    public Timestamp getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Timestamp getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -212,19 +212,19 @@ public class User {
         this.planType = planType;
     }
 
-    public Timestamp getPlanStart() {
+    public LocalDateTime getPlanStart() {
         return planStart;
     }
 
-    public void setPlanStart(Timestamp planStart) {
+    public void setPlanStart(LocalDateTime planStart) {
         this.planStart = planStart;
     }
 
-    public Timestamp getPlanEnd() {
+    public LocalDateTime getPlanEnd() {
         return planEnd;
     }
 
-    public void setPlanEnd(Timestamp planEnd) {
+    public void setPlanEnd(LocalDateTime planEnd) {
         this.planEnd = planEnd;
     }
 

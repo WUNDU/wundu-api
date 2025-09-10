@@ -1,5 +1,6 @@
 package ao.com.wundu.config;
 
+import ao.com.wundu.jwt.JwtAccessDeniedHandler;
 import ao.com.wundu.jwt.JwtAuthenticationEntryPoint;
 import ao.com.wundu.jwt.JwtAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +47,7 @@ public class SpringSecurityConfig {
                 ).addFilterBefore(
                         jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class
                 ).exceptionHandling(ex -> ex
+                        .accessDeniedHandler(new JwtAccessDeniedHandler())
                         .authenticationEntryPoint((new JwtAuthenticationEntryPoint()))
                 ).build();
     }
