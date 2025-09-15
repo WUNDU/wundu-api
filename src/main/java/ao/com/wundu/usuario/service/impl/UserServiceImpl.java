@@ -1,17 +1,23 @@
 package ao.com.wundu.usuario.service.impl;
 
+import ao.com.wundu.exception.BusinessValidationException;
 import ao.com.wundu.exception.ResourceNotFoundException;
 import ao.com.wundu.usuario.dto.UserRequest;
 import ao.com.wundu.usuario.dto.UserResponse;
 import ao.com.wundu.usuario.entity.User;
+import ao.com.wundu.usuario.enums.PlanType;
 import ao.com.wundu.usuario.enums.Role;
 import ao.com.wundu.usuario.mapper.UserMapper;
 import ao.com.wundu.usuario.repository.UserRepository;
 import ao.com.wundu.usuario.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +34,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse create(UserRequest request) {
+
+        if (userRepository.existsByEmail(request.email())) {
+            throw new BusinessValidationException("Já existe um usuário cadastrado com este e-mail");
+        }
+
+        if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
+            throw new BusinessValidationException("Já existe um usuário cadastrado com este telefone");
+        }
+
         User user = userMapper.toUser(request);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -56,9 +71,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> findAll() {
-        List<User> users = userRepository.findAll();
+    public Page<UserResponse> findByPlanType(PlanType plan, Pageable pageable) {
 
-        return userMapper.toList(users);
+        Page<User> users = userRepository.findByPlanType(plan, pageable);
+
+        return users.map(userMapper::toResponse);
+    }
+
+    @Override
+    public Page<UserResponse> findByIdIsActive(Boolean isActive, Pageable pageable) {
+        return userRepository.findByIsActive(isActive, pageable)
+                .map(userMapper::toResponse);
+    }
+
+    @Override
+    public Page<UserResponse> findByCreatedAtAfter(LocalDateTime createdAt, Pageable pageable) {
+        return userRepository.findByCreatedAtAfter(createdAt, pageable)
+                .map(userMapper::toResponse);
     }
 }

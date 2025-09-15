@@ -1,23 +1,29 @@
--- V004. TABELA DE LIMITES POR USUÁRIO E CATEGORIA
+-- V004 - Criação da tabela de OCR RECORDS
 
-CREATE TABLE user_category_limit (
+CREATE TABLE ocr_records (
     id VARCHAR(255) PRIMARY KEY,
     user_id VARCHAR(255) NOT NULL,
-    category_id VARCHAR(255) NOT NULL,
-    monthly_limit DOUBLE PRECISION NOT NULL DEFAULT -1,
+    file_name VARCHAR(255) NOT NULL,
+    content_type VARCHAR(100) NOT NULL,
+    file_size BIGINT NOT NULL,
+    extracted_text TEXT,
+    status VARCHAR(25) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_user_category_limit_user FOREIGN KEY (user_id) REFERENCES users(id),
-    CONSTRAINT fk_user_category_limit_category FOREIGN KEY (category_id) REFERENCES categories(id),
-    CONSTRAINT uk_user_category UNIQUE (user_id, category_id)
+    CONSTRAINT fk_ocr_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-COMMENT ON TABLE user_category_limit IS 'Limites mensais definidos por usuário para categorias específicas';
+-- Índices
+CREATE INDEX idx_ocr_records_user_id ON ocr_records(user_id);
+CREATE INDEX idx_ocr_records_status ON ocr_records(status);
 
-COMMENT ON COLUMN user_category_limit.id IS 'Identificador único do limite por usuário e categoria';
-COMMENT ON COLUMN user_category_limit.user_id IS 'Referência ao usuário';
-COMMENT ON COLUMN user_category_limit.category_id IS 'Referência à categoria';
-COMMENT ON COLUMN user_category_limit.monthly_limit IS 'Limite mensal definido pelo usuário para esta categoria';
-
--- Índices úteis para desempenho de busca
-CREATE INDEX idx_user_category_limit_user_id ON user_category_limit(user_id);
-CREATE INDEX idx_user_category_limit_category_id ON user_category_limit(category_id);
+-- Comentários
+COMMENT ON TABLE ocr_records IS 'Histórico de documentos enviados para OCR';
+COMMENT ON COLUMN ocr_records.id IS 'Identificador único do OCR record';
+COMMENT ON COLUMN ocr_records.user_id IS 'Usuário que fez o upload';
+COMMENT ON COLUMN ocr_records.file_name IS 'Nome original do arquivo';
+COMMENT ON COLUMN ocr_records.content_type IS 'Formato/MIME do arquivo';
+COMMENT ON COLUMN ocr_records.file_size IS 'Tamanho do arquivo em bytes';
+COMMENT ON COLUMN ocr_records.extracted_text IS 'Texto extraído pelo OCR';
+COMMENT ON COLUMN ocr_records.status IS 'Status: pending, processed, error';
+COMMENT ON COLUMN ocr_records.created_at IS 'Data/hora do upload';
