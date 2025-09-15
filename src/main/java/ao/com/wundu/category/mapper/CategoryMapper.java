@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class CategoryMapper {
+
     public Category toEntity(CategoryRequest request) {
         return new Category(request.name());
     }

@@ -2,19 +2,19 @@
 
 -- Tabela de usuários
 CREATE TABLE users (
-    id VARCHAR(255) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(200) NOT NULL,
-    phone_number VARCHAR(20) UNIQUE,
-    role VARCHAR(50) NOT NULL CHECK (role IN ('admin','user')),
-    plan_type VARCHAR(20) NOT NULL CHECK (plan_type IN ('Free','Premium')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP,
-    created_by VARCHAR(255),
-    modified_by VARCHAR(255),
-    is_active BOOLEAN DEFAULT true
+                       id VARCHAR(255) PRIMARY KEY,
+                       name VARCHAR(100) NOT NULL,
+                       email VARCHAR(100) NOT NULL UNIQUE,
+                       password VARCHAR(200) NOT NULL,
+                       phone_number VARCHAR(20) NOT NULL UNIQUE,
+                       role VARCHAR(50) NOT NULL CHECK (role IN ('ADMIN','CLIENTE')) DEFAULT 'CLIENTE',
+                       plan_type VARCHAR(20) NOT NULL CHECK (plan_type IN ('FREE','PREMIUM')) DEFAULT 'FREE',
+                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                       last_login TIMESTAMP,
+                       created_by VARCHAR(255),
+                       modified_by VARCHAR(255),
+                       is_active BOOLEAN DEFAULT true
 );
 
 -- Índices para performance
@@ -30,13 +30,13 @@ CREATE OR REPLACE FUNCTION update_users_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
    NEW.updated_at = CURRENT_TIMESTAMP;
-   RETURN NEW;
+RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_users_updated_at
-BEFORE UPDATE ON users
-FOR EACH ROW EXECUTE FUNCTION update_users_updated_at();
+    BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_users_updated_at();
 
 -- Comentários
 COMMENT ON TABLE users IS 'Tabela de usuários do sistema Wundu';

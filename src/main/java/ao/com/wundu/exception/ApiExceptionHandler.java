@@ -67,17 +67,37 @@ public class ApiExceptionHandler {
             ResourceNotFoundException ex,
             HttpServletRequest request) {
 
-        logger.error(
+      /*  logger.error(
                 "\n{}🔴 API ERROR{}\n\n{}Mensagem:{} {}{}\n{}Origem:{} {}{}\n{}Stacktrace:{}\n{}\n",
                 RED, RESET,
                 BLUE, RESET, YELLOW + ex.getMessage() + RESET,
                 BLUE, RESET, YELLOW + ex.getClass().getName() + RESET,
                 BLUE, RESET
-        );
+        );*/
 
         return ResponseEntity
                 .status(ex.getStatus())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, ex.getStatus(), ex.getMessage()));
     }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorMessage> resourceAccessException( BusinessException ex,  HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        /*logger.error(
+                "\n{}🔴 API ERROR{}\n\n{}Mensagem:{} {}{}\n{}Origem:{} {}{}\n{}Stacktrace:{}\n{}\n",
+                RED, RESET,
+                BLUE, RESET, YELLOW + ex.getMessage() + RESET,
+                BLUE, RESET, YELLOW + ex.getClass().getName() + RESET,
+                BLUE, RESET
+        );*/
+
+        return ResponseEntity
+                .status(status)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, status, ex.getMessage()));
+    }
+
 }
