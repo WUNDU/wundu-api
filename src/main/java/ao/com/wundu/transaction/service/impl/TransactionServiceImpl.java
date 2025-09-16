@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -91,9 +92,8 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Transação com id=" + id + " não encontrada"));
         if (!userDetails.getRole().equals(Role.ADMIN.name()) && 
             !transaction.getUserId().equals(userDetails.getId())) {
-            throw new ResourceNotFoundException("Transação com id=" + id + " não encontrada");
+            throw new ResourceNotFoundException("Acesso negado à transação id = " + id, HttpStatus.FORBIDDEN);
         }
-
         return transactionMapper.toResponse(transaction);
     }
 
