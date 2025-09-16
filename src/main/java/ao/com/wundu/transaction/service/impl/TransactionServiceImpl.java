@@ -9,12 +9,15 @@ import ao.com.wundu.transaction.dtos.TransactionResponse;
 import ao.com.wundu.transaction.entity.Transaction;
 import ao.com.wundu.transaction.mapper.TransactionMapper;
 import ao.com.wundu.transaction.repository.TransactionRepository;
+import ao.com.wundu.transaction.repository.TransactionSpecifications;
 import ao.com.wundu.transaction.service.TransactionService;
 import ao.com.wundu.usuario.entity.User;
 import ao.com.wundu.usuario.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -44,15 +47,12 @@ public class TransactionServiceImpl implements TransactionService {
             String categoryName = request.category().name().trim();
 
             Category category = categoryRepository.findByName(categoryName)
-                    .orElseGet(() -> {
-                        Category newCategory = new Category(categoryName);
-                        return categoryRepository.save(newCategory);
-                    });
+                    .orElseGet(() -> categoryRepository.save(new Category(categoryName)));
 
             transaction.setCategory(category);
         }
-        transaction = transactionRepository.save(transaction);
 
+        transaction = transactionRepository.save(transaction);
         return transactionMapper.toResponse(transaction);
     }
 
@@ -66,10 +66,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         Category category = categoryRepository.findByName(request.categoryName())
-                .orElseGet(() -> {
-                    Category newCategory = new Category(request.categoryName());
-                    return categoryRepository.save(newCategory);
-                });
+                .orElseGet(() -> categoryRepository.save(new Category(request.categoryName())));
 
         transaction.setCategory(category);
         transactionRepository.save(transaction);
@@ -93,7 +90,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria com id=" + categoryId + " não encontrada"));
 
         List<Transaction> transactions = transactionRepository.findByUserIdAndCategory_Id(user.getId(), category.getId());
-
         return transactionMapper.toList(transactions);
     }
 
@@ -103,7 +99,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário com id=" + userId + " não encontrado"));
 
         List<Transaction> transactions = transactionRepository.findByUserId(user.getId());
-
         return transactionMapper.toList(transactions);
     }
 
@@ -112,4 +107,22 @@ public class TransactionServiceImpl implements TransactionService {
         List<Transaction> transactions = transactionRepository.findAll();
         return transactionMapper.toList(transactions);
     }
+
+    @Override
+    public List<TransactionResponse> findWithFilters(String userId, String categoryId,
+                                                    String status, LocalDate startDate, LocalDate endDate) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário com id=" + userId + " não encontrado"));
+
+        Specification<Transaction> spec = (root, query, builder) -> builder.conjunction();
+
+        spec = spec.and(TransactionSpecifications.hasUserId(userId));
+        spec = spec.and(TransactionSpecifications.hasCategoryId(categoryId));
+        spec = spec.and(TransactionSpecifications.hasStatus(status));
+        spec = spec.and(TransactionSpecifications.betweenDates(startDate, endDate));
+
+        List<Transaction> transactions = transactionRepository.findAll(spec);
+        return transactionMapper.toList(transactions);
+    }
+
 }
