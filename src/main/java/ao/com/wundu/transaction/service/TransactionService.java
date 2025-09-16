@@ -20,7 +20,7 @@ public interface TransactionService {
 
     List<TransactionResponse> findByUser();
 
-    List<TransactionResponse> findAll();
+    Page<TransactionResponse> findAll(int page, int size);
 
     Page<TransactionResponse> findWithFilters(String categoryId,
                                               String status, LocalDate startDate, LocalDate endDate,

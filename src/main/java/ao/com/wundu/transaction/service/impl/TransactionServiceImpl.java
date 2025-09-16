@@ -106,13 +106,21 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponse> findAll() {
+    public Page<TransactionResponse> findAll(int page, int size) {
         JwtUserDetails userDetails = getAuthenticatedUser();
+        PageRequest pageable = PageRequest.of(page, size);
+
+        Page<Transaction> transactions;
         if (userDetails.getRole().equals(Role.ADMIN.name())) {
-            return transactionMapper.toList(transactionRepository.findAll());
+            transactions = transactionRepository.findAll(pageable);
         } else {
-            return transactionMapper.toList(transactionRepository.findByUserId(userDetails.getId()));
+            transactions = transactionRepository.findAll(
+                    TransactionSpecifications.hasUserId(userDetails.getId()), pageable
+            );
         }
+
+        List<TransactionResponse> responseList = transactionMapper.toList(transactions.getContent());
+        return new PageImpl<>(responseList, pageable, transactions.getTotalElements());
     }
 
     @Override

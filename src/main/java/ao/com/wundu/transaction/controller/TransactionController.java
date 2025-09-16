@@ -32,7 +32,7 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @PostMapping
-    @Operation(summary = "Criar uma nova transação", description = "Recurso para criar uma nova transação (receita ou despesa)")
+    @Operation(summary = "Criar uma nova transação")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Transação criada com sucesso",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionResponse.class))),
@@ -46,13 +46,15 @@ public class TransactionController {
 
     @GetMapping
     @Operation(summary = "Listar todas as transações do usuário autenticado ou todas se ADMIN")
-    public ResponseEntity<List<TransactionResponse>> findAll() {
-        List<TransactionResponse> responses = transactionService.findAll();
+    public ResponseEntity<Page<TransactionResponse>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<TransactionResponse> responses = transactionService.findAll(page, size);
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/me")
-    @Operation(summary = "Listar transações do usuário autenticado")
+    @Operation(summary = "Listar transações do usuário autenticado (sem paginação)")
     public ResponseEntity<List<TransactionResponse>> findByUser() {
         List<TransactionResponse> responses = transactionService.findByUser();
         return ResponseEntity.ok(responses);
