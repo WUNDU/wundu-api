@@ -1,6 +1,7 @@
 package ao.com.wundu.transaction.entity;
 
 import ao.com.wundu.category.entity.Category;
+import ao.com.wundu.transaction.enums.TransactionStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -30,14 +31,15 @@ public class Transaction {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 25)
-    private String status = "pending";
+    private TransactionStatus status = TransactionStatus.PENDING;
 
     @Column(name = "transaction_date", nullable = false)
     private LocalDate transactionDate;
 
     @CreationTimestamp
-    @Column(name = "create_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,7 +49,7 @@ public class Transaction {
     public Transaction() {}
 
     public Transaction(String id, Double amount, String source, String description,
-                       String type, String status, LocalDateTime createdAt,
+                       String type, TransactionStatus status, LocalDateTime createdAt,
                        LocalDate transactionDate, String userId) {
         this.id = id;
         this.amount = amount;
@@ -61,7 +63,7 @@ public class Transaction {
     }
 
     public Transaction(Double amount, String description, String type,
-                       String userId, LocalDate transactionDate, String status) {
+                       String userId, LocalDate transactionDate, TransactionStatus status) {
         this.amount = amount;
         this.description = description;
         this.type = type;
@@ -99,7 +101,7 @@ public class Transaction {
         return description;
     }
 
-    public String getStatus() {
+    public TransactionStatus getStatus() {
         return status;
     }
 
@@ -135,11 +137,11 @@ public class Transaction {
         this.description = description;
     }
 
-    public void setTransaction_date(LocalDate transactionDate) {
+    public void setTransactionDate(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TransactionStatus status) {
         this.status = status;
     }
 }

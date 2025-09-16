@@ -1,6 +1,7 @@
 package ao.com.wundu.transaction.dtos;
 
 import ao.com.wundu.category.dto.CategoryResponse;
+import ao.com.wundu.transaction.enums.TransactionStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -27,8 +28,8 @@ public record TransactionResponse(
         @Schema(description = "Descrição detalhada da transação", example = "Pagamento da renda")
         String description,
 
-        @Schema(description = "Status da transação (pending, completed, failed)", example = "pending")
-        String status,
+        @Schema(description = "Status da transação", example = "PENDING")
+        TransactionStatus status,
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         @Schema(description = "Data em que a transação ocorreu", example = "2025-07-05")

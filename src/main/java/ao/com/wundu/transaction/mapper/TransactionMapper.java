@@ -4,6 +4,7 @@ import ao.com.wundu.category.dto.CategoryResponse;
 import ao.com.wundu.category.mapper.CategoryMapper;
 import ao.com.wundu.transaction.dtos.TransactionRequest;
 import ao.com.wundu.transaction.dtos.TransactionResponse;
+import ao.com.wundu.transaction.enums.TransactionStatus;
 import ao.com.wundu.transaction.entity.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,17 +22,17 @@ public final class TransactionMapper {
     }
 
     public Transaction toEntity(TransactionRequest request) {
-        Transaction transaction = new Transaction(
-                request.amount(),
-                request.description(),
-                request.type(),
-                request.userId(),
-                request.transactionDate(),
-                request.status() == null ? "pending" : request.status()
-        );
-        transaction.setSource(request.source());
-        transaction.setCategory(null);
-        return transaction;
+    Transaction transaction = new Transaction(
+            request.amount(),
+            request.description(),
+            request.type(),
+            request.userId(),
+            request.transactionDate(),
+            request.status() == null ? TransactionStatus.PENDING : request.status()
+    );
+    transaction.setSource(request.source());
+    transaction.setCategory(null);
+    return transaction;
     }
 
     public TransactionResponse toResponse(Transaction transaction) {

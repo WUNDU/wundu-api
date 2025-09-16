@@ -17,10 +17,15 @@ CREATE TABLE transactions (
     CONSTRAINT fk_transaction_category FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
--- Índices
+-- Índices básicos
 CREATE INDEX idx_transactions_user_id ON transactions(user_id);
 CREATE INDEX idx_transactions_category_id ON transactions(category_id);
 CREATE INDEX idx_transactions_date ON transactions(transaction_date);
+CREATE INDEX idx_transactions_status ON transactions(status);
+
+-- Índice composto (para melhorar filtros combinados de user_id + status + date)
+CREATE INDEX idx_transactions_user_status_date
+    ON transactions(user_id, status, transaction_date);
 
 -- Comentários
 COMMENT ON TABLE transactions IS 'Tabela de transações financeiras (OCR ou sincronização)';
@@ -34,4 +39,3 @@ COMMENT ON COLUMN transactions.amount IS 'Valor da transação';
 COMMENT ON COLUMN transactions.description IS 'Descrição da transação';
 COMMENT ON COLUMN transactions.transaction_date IS 'Data real da transação';
 COMMENT ON COLUMN transactions.created_at IS 'Data/hora da criação';
-

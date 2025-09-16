@@ -1,8 +1,8 @@
 package ao.com.wundu.transaction.dtos;
 
 import java.time.LocalDate;
-
 import ao.com.wundu.category.dto.CategoryRequest;
+import ao.com.wundu.transaction.enums.TransactionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -24,8 +24,8 @@ public record TransactionUpdate(
         @Schema(example = "Compra de material de escritório", description = "Descrição detalhada da transação") 
         String description,
 
-        @Schema(example = "completed", description = "Status da transação (pending, completed, failed)")
-        String status,
+        @Schema(example = "PENDING", description = "Status da transação (PENDING, CONFIRMED, NOT_RECOGNIZED, ERROR_OCR)")
+        TransactionStatus status,
 
         @Schema(example = "2025-08-15", description = "Data em que a transação ocorreu") 
         LocalDate transactionDate,
