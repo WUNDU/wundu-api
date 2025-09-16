@@ -3,6 +3,7 @@ package ao.com.wundu.category.mapper;
 import ao.com.wundu.category.dto.CategoryRequest;
 import ao.com.wundu.category.dto.CategoryResponse;
 import ao.com.wundu.category.entity.Category;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,5 +22,10 @@ public class CategoryMapper {
 
     public List<CategoryResponse> toList(List<Category> categories) {
         return categories.stream().map(user -> toResponse(user)).collect(Collectors.toList());
+    }
+
+    public Page<CategoryResponse> toCategoryResponsePage(Page<Category> categories) {
+
+        return categories.map(this::toResponse);
     }
 }

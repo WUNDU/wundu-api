@@ -9,6 +9,9 @@ import ao.com.wundu.category.service.CategoryService;
 import ao.com.wundu.exception.BusinessException;
 import ao.com.wundu.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,5 +53,11 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryResponse> findAll() {
 
         return categoryMapper.toList(categoryRepository.findAll());
+    }
+
+    @Override
+    public Page<CategoryResponse> findAll(Specification<Category> spec, Pageable pageable) {
+
+        return categoryMapper.toCategoryResponsePage(categoryRepository.findAll(spec, pageable));
     }
 }
