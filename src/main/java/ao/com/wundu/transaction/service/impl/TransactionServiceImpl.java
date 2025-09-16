@@ -86,8 +86,14 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TransactionResponse findById(String id) {
+        JwtUserDetails userDetails = getAuthenticatedUser();
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transação com id=" + id + " não encontrada"));
+        if (!userDetails.getRole().equals(Role.ADMIN.name()) && 
+            !transaction.getUserId().equals(userDetails.getId())) {
+            throw new ResourceNotFoundException("Transação com id=" + id + " não encontrada");
+        }
+
         return transactionMapper.toResponse(transaction);
     }
 
