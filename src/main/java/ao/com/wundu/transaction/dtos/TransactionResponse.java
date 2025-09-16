@@ -15,7 +15,7 @@ public record TransactionResponse(
         @Schema(description = "Tipo da transação: income ou expense", example = "income")
         String type,
 
-        @Schema(description = "Fonte ou origem da transação", example = "Banco BAI")
+        @Schema(description = "Fonte ou origem da transação", example = "PDF")
         String source,
 
         @Schema(description = "Valor da transação", example = "2500.75")

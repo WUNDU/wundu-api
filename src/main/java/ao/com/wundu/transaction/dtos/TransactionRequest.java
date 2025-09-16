@@ -16,7 +16,7 @@ public record TransactionRequest(
         String type,
 
         @Size(max = 50, message = "A fonte da transação deve ter no máximo 50 caracteres")
-        @Schema(example = "Banco BAI", description = "Fonte ou origem da transação")
+        @Schema(example = "PDF", description = "Fonte ou origem da transação")
         String source,
 
         @NotNull(message = "O valor da transação é obrigatório")
