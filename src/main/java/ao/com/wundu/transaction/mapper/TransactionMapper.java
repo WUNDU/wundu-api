@@ -5,7 +5,6 @@ import ao.com.wundu.category.mapper.CategoryMapper;
 import ao.com.wundu.transaction.dtos.TransactionRequest;
 import ao.com.wundu.transaction.dtos.TransactionResponse;
 import ao.com.wundu.transaction.entity.Transaction;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,25 +20,24 @@ public final class TransactionMapper {
     private TransactionMapper() {
     }
 
-    // Converte DTO de entrada -> Entidade
     public Transaction toEntity(TransactionRequest request) {
         Transaction transaction = new Transaction(
                 request.amount(),
                 request.description(),
                 request.type(),
                 request.userId(),
-                request.transactionDate());
+                request.transactionDate(),
+                request.status() == null ? "pending" : request.status()
+        );
         transaction.setSource(request.source());
-        transaction.setTransactionDate(request.transactionDate());
         transaction.setCategory(null);
         return transaction;
     }
 
-    // Converte Entidade -> DTO de saída
-    public  TransactionResponse toResponse(Transaction transaction) {
+    public TransactionResponse toResponse(Transaction transaction) {
         CategoryResponse categoryResponse = null;
         if (transaction.getCategory() != null) {
-            categoryResponse =   categoryMapper.toResponse(transaction.getCategory());
+            categoryResponse = categoryMapper.toResponse(transaction.getCategory());
         }
         return new TransactionResponse(
                 transaction.getId(),
@@ -48,15 +46,16 @@ public final class TransactionMapper {
                 transaction.getAmount(),
                 transaction.getUserId(),
                 transaction.getDescription(),
-                transaction.getDateTime(),
+                transaction.getStatus(),
                 transaction.getTransactionDate(),
-                categoryResponse);
+                transaction.getCreatedAt(),
+                categoryResponse
+        );
     }
 
-    // Converte Lista de Entidades -> Lista de DTOs
     public List<TransactionResponse> toList(List<Transaction> transactions) {
         return transactions.stream()
-                .map( transaction -> toResponse(transaction) )
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 }

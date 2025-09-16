@@ -15,49 +15,60 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 25)
     private String type;
 
+    @Column(length = 50)
     private String source;
 
     @Column(nullable = false)
     private Double amount;
 
+    @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false, length = 25)
+    private String status = "pending";
 
     @Column(name = "transaction_date", nullable = false)
     private LocalDate transactionDate;
 
     @CreationTimestamp
-    @Column(name = "date_time", nullable = false)
-    private LocalDateTime dateTime;
-    
+    @Column(name = "create_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
     public Transaction() {}
 
-    public Transaction(String id, Double amount, String source, String description, String type, LocalDateTime dateTime, LocalDate transactionDate, String userId) {
+    public Transaction(String id, Double amount, String source, String description,
+                       String type, String status, LocalDateTime createdAt,
+                       LocalDate transactionDate, String userId) {
         this.id = id;
         this.amount = amount;
         this.source = source;
         this.description = description;
         this.type = type;
-        this.dateTime = dateTime;
+        this.status = status;
+        this.createdAt = createdAt;
         this.transactionDate = transactionDate;
         this.userId = userId;
     }
 
-    public Transaction(Double amount, String description, String type, String userId, LocalDate transactionDate) {
+    public Transaction(Double amount, String description, String type,
+                       String userId, LocalDate transactionDate, String status) {
         this.amount = amount;
         this.description = description;
         this.type = type;
         this.userId = userId;
         this.transactionDate = transactionDate;
-        this.dateTime = LocalDateTime.now();
+        this.status = status;
+        this.createdAt = LocalDateTime.now();
     }
 
     public String getId() {
@@ -79,7 +90,7 @@ public class Transaction {
     public String getUserId() {
         return userId;
     }
-    
+
     public Category getCategory() {
         return category;
     }
@@ -88,12 +99,16 @@ public class Transaction {
         return description;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public LocalDate getTransactionDate() {
         return transactionDate;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public void setType(String type) {
@@ -107,7 +122,7 @@ public class Transaction {
     public void setAmount(Double amount) {
         this.amount = amount;
     }
-    
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -120,7 +135,11 @@ public class Transaction {
         this.description = description;
     }
 
-    public void setTransactionDate(LocalDate transactionDate) {
+    public void setTransaction_date(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

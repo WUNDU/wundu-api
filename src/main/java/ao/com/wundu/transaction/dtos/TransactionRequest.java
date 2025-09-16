@@ -11,28 +11,34 @@ import jakarta.validation.constraints.Size;
 
 public record TransactionRequest(
 
-        // @NotBlank(message = "O tipo da transação é obrigatório")
-        // @Pattern(regexp = "^(income|expense)$", message = "O tipo deve ser 'income'
-        // ou 'expense'")
+        @NotBlank(message = "O tipo da transação é obrigatório")
+        @Schema(example = "income", description = "Tipo da transação: income ou expense")
         String type,
 
         @Size(max = 50, message = "A fonte da transação deve ter no máximo 50 caracteres")
+        @Schema(example = "Banco BAI", description = "Fonte ou origem da transação")
         String source,
 
         @NotNull(message = "O valor da transação é obrigatório")
         @Positive(message = "O valor deve ser maior que zero") 
+        @Schema(example = "2500.75", description = "Valor da transação")
         Double amount,
 
         @NotBlank(message = "O ID do usuário é obrigatório")
+        @Schema(example = "user-123", description = "ID do usuário dono da transação")
         String userId,
 
-        @Size(max = 255, message = "A descrição deve ter no máximo 255 caracteres") 
+        @Size(max = 255, message = "A descrição deve ter no máximo 255 caracteres")
+        @Schema(example = "Pagamento da renda", description = "Descrição detalhada da transação") 
         String description,
 
-        @NotNull(message = "A data da transação é obrigatória") @Schema(example = "2025-07-05") 
+        @NotNull(message = "A data da transação é obrigatória") 
+        @Schema(example = "2025-07-05", description = "Data em que a transação ocorreu") 
         LocalDate transactionDate,
 
-        CategoryRequest category
+        @Schema(example = "pending", description = "Status da transação (pending, completed, failed)")
+        String status,
 
+        CategoryRequest category
 ) {
 }
