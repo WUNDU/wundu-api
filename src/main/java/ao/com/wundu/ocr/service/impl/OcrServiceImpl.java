@@ -1,8 +1,9 @@
 package ao.com.wundu.ocr.service.impl;
 
 import ao.com.wundu.exception.ResourceNotFoundException;
-import ao.com.wundu.ocr.dto.OcrResponse;
+import ao.com.wundu.ocr.dtos.OcrResponse;
 import ao.com.wundu.ocr.entity.OcrRecord;
+import ao.com.wundu.ocr.enums.OcrStatus;
 import ao.com.wundu.ocr.repository.OcrRepository;
 import ao.com.wundu.ocr.service.OcrService;
 import ao.com.wundu.upload.service.UploadService;
@@ -50,15 +51,18 @@ public class OcrServiceImpl implements OcrService {
         byte[] bytes = uploadService.uploadOcr(file);
         String contentType = Optional.ofNullable(file.getContentType()).orElse("").toLowerCase();
         String originalName = Optional.ofNullable(file.getOriginalFilename()).orElse("file");
-        List<String> pages = new ArrayList<>();
+        String userId = "mock-user";
+
+        OcrRecord record = new OcrRecord(userId, originalName, contentType, null, file.getSize(), OcrStatus.PENDING);
+        record = ocrRepository.save(record);
 
         try {
+            List<String> pages = new ArrayList<>();
             boolean isPdf = "application/pdf".equalsIgnoreCase(contentType) || originalName.toLowerCase().endsWith(".pdf");
 
             if (isPdf) {
                 if (file.getSize() <= MAX_SIZE_MB) {
-                    String text = callHuggingFace(bytes);
-                    pages.add(text);
+                    pages.add(callHuggingFace(bytes));
                 } else {
                     try (PDDocument doc = PDDocument.load(bytes)) {
                         PDFRenderer renderer = new PDFRenderer(doc);
@@ -69,22 +73,32 @@ public class OcrServiceImpl implements OcrService {
                             baos.flush();
                             byte[] imgBytes = baos.toByteArray();
                             baos.close();
-                            String pageText = callHuggingFace(imgBytes);
-                            pages.add(pageText);
+                            pages.add(callHuggingFace(imgBytes));
                         }
                     }
                 }
             } else if (contentType.startsWith("image/") || originalName.matches("(?i).*\\.(png|jpe?g)$")) {
-                String text = callHuggingFace(bytes);
-                pages.add(text);
+                pages.add(callHuggingFace(bytes));
             }
 
             String fullText = pages.stream().filter(Objects::nonNull).collect(Collectors.joining("\n\n"));
-            OcrRecord record = new OcrRecord(originalName, contentType, fullText, file.getSize());
+
+            record.setExtractedText(fullText);
+            record.setStatus(OcrStatus.PROCESSED);
             OcrRecord saved = ocrRepository.save(record);
 
-            return new OcrResponse(saved.getId(), saved.getFileName(), saved.getContentType(), saved.getFileSize(), saved.getExtractedText());
-        } catch (IOException e) {
+            return new OcrResponse(
+                    saved.getId(),
+                    saved.getUserId(),
+                    saved.getFileName(),
+                    saved.getContentType(),
+                    saved.getFileSize(),
+                    saved.getExtractedText(),
+                    saved.getStatus().name()
+            );
+        } catch (Exception e) {
+            record.setStatus(OcrStatus.ERROR);
+            ocrRepository.save(record);
             throw new ResourceNotFoundException("Erro ao processar arquivo para OCR", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

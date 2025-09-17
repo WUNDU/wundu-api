@@ -1,7 +1,7 @@
 package ao.com.wundu.ocr.controller;
 
 import ao.com.wundu.exception.ErrorMessage;
-import ao.com.wundu.ocr.dto.OcrResponse;
+import ao.com.wundu.ocr.dtos.OcrResponse;
 import ao.com.wundu.ocr.service.OcrService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
