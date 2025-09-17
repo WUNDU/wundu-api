@@ -1,0 +1,5 @@
+-- V007 - Alteração da tabela da USERS
+
+ALTER TABLE users ADD COLUMN plan_start TIMESTAMP;
+ALTER TABLE users ADD COLUMN plan_end TIMESTAMP;
+ALTER TABLE users ADD COLUMN is_trial BOOLEAN DEFAULT false;

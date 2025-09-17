@@ -32,7 +32,13 @@ public class UserMapper {
                 user.getEmail(),
                 user.getPhoneNumber(),
                 user.getRole().name(),
-                user.getActive()
+                user.getPlanType().name(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                user.getActive(),
+                user.getPlanStart(),
+                user.getPlanEnd(),
+                user.getTrial()
         );
     }
 

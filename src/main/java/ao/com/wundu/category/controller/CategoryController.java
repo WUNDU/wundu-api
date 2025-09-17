@@ -3,6 +3,7 @@ package ao.com.wundu.category.controller;
 import ao.com.wundu.category.dto.CategoryRequest;
 import ao.com.wundu.category.dto.CategoryResponse;
 import ao.com.wundu.category.service.CategoryService;
+import ao.com.wundu.category.specification.SpecificationCategoryTemplate;
 import ao.com.wundu.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,8 +12,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,8 +51,9 @@ public class CategoryController {
         }
     )
     @GetMapping
-    public ResponseEntity<List<CategoryResponse>> findAll() {
-        List<CategoryResponse> categories = categoryService.findAll();
-        return ResponseEntity.ok(categories);
+    public ResponseEntity<Page<CategoryResponse>> findAll(SpecificationCategoryTemplate.CategorySpec categorySpec,
+                                                          @PageableDefault(page = 0, size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.findAll(categorySpec, pageable));
     }
 }
