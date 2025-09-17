@@ -24,6 +24,7 @@ services:
       SPRING_DATASOURCE_USERNAME: wundu
       SPRING_DATASOURCE_PASSWORD: wundu
       SPRING_PROFILES_ACTIVE: dev
+      HUGGINGFACE_TOKEN: ${HUGGINGFACE_TOKEN}
     ports:
       - "8081:8080"
     depends_on:
