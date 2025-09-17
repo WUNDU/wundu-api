@@ -20,8 +20,11 @@ public record UserRequest(
         String phoneNumber,
 
         @NotBlank(message = "O campo e-mail é obrigatório")
-        @Size(min = 6, max = 12, message = "Senha deve ter no mínimo 8 caracteres e no máximo 12")
-        @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d).+$", message = "Senha deve conter pelo menos uma letra maiúscula e um número")
+        @Size(min = 8, max = 12, message = "Senha deve ter no mínimo 8 caracteres e no máximo 12")
+        @Pattern(
+                regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,12}$",
+                message = "Senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&)"
+        )
         String password
 ) {
 }
