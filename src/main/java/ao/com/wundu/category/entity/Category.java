@@ -20,7 +20,7 @@ public class Category {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 10)
-    private CategoryType type = CategoryType.DEFAULT;
+    private CategoryType type = CategoryType.CUSTOM;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Transaction> transactions = new ArrayList<>();
