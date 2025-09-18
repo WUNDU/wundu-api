@@ -14,8 +14,8 @@ CREATE TABLE ocr_records (
 );
 
 -- Índices
-CREATE INDEX idx_ocr_records_user_id ON ocr_records(user_id);
-CREATE INDEX idx_ocr_records_status ON ocr_records(status);
+CREATE INDEX idx_ocr_records_user_created_at 
+    ON ocr_records(user_id, created_at);
 
 -- Comentários
 COMMENT ON TABLE ocr_records IS 'Histórico de documentos enviados para OCR';
