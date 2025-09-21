@@ -42,6 +42,15 @@ public class DocumentLog {
         this.contentType = contentType;
         this.fileSize = fileSize;
         this.type = type;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public DocumentLog(String fileName, String contentType, Long fileSize, DocumentLogType type) {
+        this.fileName = fileName;
+        this.contentType = contentType;
+        this.fileSize = fileSize;
+        this.type = type;
+        this.createdAt = LocalDateTime.now();
     }
 
     public String getId() {

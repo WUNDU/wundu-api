@@ -9,6 +9,8 @@ import ao.com.wundu.documentLogs.repository.DocumentLogRepository;
 import ao.com.wundu.documentLogs.service.DocumentLogService;
 import ao.com.wundu.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +29,15 @@ public class DocumentLogServiceImpl implements DocumentLogService {
     @Override
     @Transactional
     public DocumentLogResponse create(DocumentLogRequest request) {
-        DocumentLog log = mapper.toEntity(request);
-        log = repository.save(log);
-        return mapper.toResponse(log);
+        try {
+            DocumentLog log = mapper.toEntity(request);
+            log = repository.save(log);
+            return mapper.toResponse(log);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceNotFoundException("Violação de integridade ao salvar log", HttpStatus.BAD_REQUEST);
+        } catch (DataAccessException e) {
+            throw new ResourceNotFoundException("Erro ao acessar o banco de dados", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
