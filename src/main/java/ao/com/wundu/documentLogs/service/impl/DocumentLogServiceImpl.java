@@ -33,10 +33,11 @@ public class DocumentLogServiceImpl implements DocumentLogService {
             DocumentLog log = mapper.toEntity(request);
             log = repository.save(log);
             return mapper.toResponse(log);
-        } catch (DataIntegrityViolationException e) {
-            throw new ResourceNotFoundException("Violação de integridade ao salvar log", HttpStatus.BAD_REQUEST);
-        } catch (DataAccessException e) {
-            throw new ResourceNotFoundException("Erro ao acessar o banco de dados", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException(
+                    "Erro ao salvar o log",
+                    HttpStatus.BAD_REQUEST
+            );
         }
     }
 
