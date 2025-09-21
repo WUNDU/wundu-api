@@ -33,18 +33,26 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Override
     public AuditLogResponse findById(String id) {
         AuditLog log = auditLogRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Log não encontrado com id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Audit log não encontrado com id=" + id));
         return mapper.toResponse(log);
     }
 
     @Override
     public List<AuditLogResponse> findByActor(String actorId) {
-        return mapper.toList(auditLogRepository.findByActorId(actorId));
+        List<AuditLog> logs = auditLogRepository.findByActorId(actorId);
+        if (logs.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum audit log encontrado para actorId=" + actorId);
+        }
+        return mapper.toList(logs);
     }
 
     @Override
     public List<AuditLogResponse> findByTarget(String targetUserId) {
-        return mapper.toList(auditLogRepository.findByTargetUserId(targetUserId));
+        List<AuditLog> logs = auditLogRepository.findByTargetUserId(targetUserId);
+        if (logs.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum audit log encontrado para targetUserId=" + targetUserId);
+        }
+        return mapper.toList(logs);
     }
 
     @Override

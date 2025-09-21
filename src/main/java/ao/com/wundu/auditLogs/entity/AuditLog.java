@@ -38,6 +38,7 @@ public class AuditLog {
         this.targetUserId = targetUserId;
         this.action = action;
         this.changedFields = changedFields;
+        this.createdAt = LocalDateTime.now();
     }
 
     public String getId() {
