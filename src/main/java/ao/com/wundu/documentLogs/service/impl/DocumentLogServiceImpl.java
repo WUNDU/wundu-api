@@ -9,6 +9,7 @@ import ao.com.wundu.documentLogs.repository.DocumentLogRepository;
 import ao.com.wundu.documentLogs.service.DocumentLogService;
 import ao.com.wundu.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,23 +35,48 @@ public class DocumentLogServiceImpl implements DocumentLogService {
     @Override
     public DocumentLogResponse findById(String id) {
         DocumentLog log = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Log não encontrado com id=" + id));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Log não encontrado com id=" + id));
         return mapper.toResponse(log);
     }
 
     @Override
     public List<DocumentLogResponse> findByActor(String actorId) {
-        return mapper.toList(repository.findByActorId(actorId));
+        List<DocumentLog> logs = repository.findByActorId(actorId);
+        if (logs.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum log encontrado para actorId=" + actorId);
+        }
+        return mapper.toList(logs);
     }
 
     @Override
     public List<DocumentLogResponse> findByType(String type) {
-        DocumentLogType logType = DocumentLogType.valueOf(type.toUpperCase());
-        return mapper.toList(repository.findByType(logType));
+        DocumentLogType logType;
+        try 
+        {
+            logType = DocumentLogType.valueOf(type.toUpperCase());
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new ResourceNotFoundException(
+                    "Tipo de log inválido: " + type,
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        List<DocumentLog> logs = repository.findByType(logType);
+        if (logs.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum log encontrado para o tipo = " + type);
+        }
+        return mapper.toList(logs);
     }
 
     @Override
     public List<DocumentLogResponse> findAll() {
-        return mapper.toList(repository.findAll());
+        List<DocumentLog> logs = repository.findAll();
+        if (logs.isEmpty()){
+            throw new ResourceNotFoundException("Nenhum log encontrado no sistema");
+        }
+        return mapper.toList(logs);
     }
 }
