@@ -17,9 +17,12 @@ CREATE TABLE financial_goals (
     CONSTRAINT fk_goal_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- Índices
 CREATE INDEX idx_goals_user_id ON financial_goals(user_id);
 CREATE INDEX idx_goals_status ON financial_goals(status);
+CREATE INDEX idx_goals_end_date ON financial_goals(end_date);
 
+-- Comentários
 COMMENT ON TABLE financial_goals IS 'Metas financeiras criadas por usuários Premium';
 COMMENT ON COLUMN financial_goals.id IS 'Identificador único da meta';
 COMMENT ON COLUMN financial_goals.user_id IS 'Usuário dono da meta';
@@ -32,3 +35,19 @@ COMMENT ON COLUMN financial_goals.start_date IS 'Data de início';
 COMMENT ON COLUMN financial_goals.end_date IS 'Data final esperada';
 COMMENT ON COLUMN financial_goals.status IS 'Status: active, at_risk, done';
 COMMENT ON COLUMN financial_goals.created_at IS 'Data/hora de criação';
+
+-- Trigger para atualizar status automaticamente quando atingir a meta
+CREATE OR REPLACE FUNCTION update_goal_status()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.current_amount >= NEW.target_amount THEN
+        NEW.status := 'done';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_goal_status
+BEFORE UPDATE OF current_amount ON financial_goals
+FOR EACH ROW
+EXECUTE FUNCTION update_goal_status();

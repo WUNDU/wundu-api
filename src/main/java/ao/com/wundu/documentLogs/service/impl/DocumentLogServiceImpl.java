@@ -9,8 +9,6 @@ import ao.com.wundu.documentLogs.repository.DocumentLogRepository;
 import ao.com.wundu.documentLogs.service.DocumentLogService;
 import ao.com.wundu.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
