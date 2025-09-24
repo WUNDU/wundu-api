@@ -16,9 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -49,6 +47,23 @@ public class UserServiceImpl implements UserService {
 
         user = userRepository.save(user);
         return userMapper.toResponse(user);
+    }
+
+    @Override
+    public UserResponse update(String id, UserRequest request) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessValidationException("Usuário não encontrado"));
+
+        if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
+            throw new BusinessValidationException("Já existe um usuário cadastrado com este telefone");
+        }
+
+        user.setName(request.name());
+        user.setPhoneNumber(request.phoneNumber());
+
+        User updateUser = userRepository.save(user);
+        return userMapper.toResponse(updateUser);
     }
 
     @Override
