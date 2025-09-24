@@ -1,5 +1,6 @@
 package ao.com.wundu.usuario.dto;
 
+import ao.com.wundu.usuario.enums.PlanType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -25,6 +26,8 @@ public record UserRequest(
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,12}$",
                 message = "Senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&)"
         )
-        String password
+        String password,
+
+        PlanType planType
 ) {
 }
