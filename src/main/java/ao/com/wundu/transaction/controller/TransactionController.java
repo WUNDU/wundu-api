@@ -80,9 +80,13 @@ public class TransactionController {
     @GetMapping("/filters")
     @Operation(summary = "Filtrar transações do usuário autenticado ou todas se ADMIN")
     public ResponseEntity<Page<TransactionResponse>> findWithFilters(
-            TransactionSpec spec,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @And({
+            @Spec(path = "category.id", spec = Equal.class),
+            @Spec(path = "status", spec = Equal.class),
+            @Spec(path = "transactionDate", params = {"startDate", "endDate"}, spec = Between.class)
+        }) Specification<Transaction> spec,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
 
         Page<TransactionResponse> responses = transactionService.findWithFilters(spec, page, size);
         return ResponseEntity.ok(responses);
