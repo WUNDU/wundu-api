@@ -1,13 +1,13 @@
 package ao.com.wundu.transaction.service;
 
-import org.springframework.data.jpa.domain.Specification;
-import ao.com.wundu.transaction.entity.Transaction;
 import ao.com.wundu.category.dto.DefineCategoryRequest;
 import ao.com.wundu.transaction.dtos.TransactionRequest;
 import ao.com.wundu.transaction.dtos.TransactionResponse;
-import org.springframework.data.domain.Page;
+import ao.com.wundu.transaction.entity.Transaction;
 
-import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.util.List;
 
 public interface TransactionService {

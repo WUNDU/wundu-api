@@ -10,11 +10,11 @@ import ao.com.wundu.transaction.dtos.TransactionResponse;
 import ao.com.wundu.transaction.entity.Transaction;
 import ao.com.wundu.transaction.mapper.TransactionMapper;
 import ao.com.wundu.transaction.repository.TransactionRepository;
-import ao.com.wundu.transaction.specification.TransactionSpec;
 import ao.com.wundu.transaction.service.TransactionService;
 import ao.com.wundu.usuario.entity.User;
-import ao.com.wundu.usuario.repository.UserRepository;
 import ao.com.wundu.usuario.enums.Role;
+import ao.com.wundu.usuario.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,7 +25,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -90,7 +89,7 @@ public class TransactionServiceImpl implements TransactionService {
         JwtUserDetails userDetails = getAuthenticatedUser();
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transação com id=" + id + " não encontrada"));
-        if (!userDetails.getRole().equals(Role.ADMIN.name()) && 
+        if (!userDetails.getRole().equals(Role.ADMIN.name()) &&
             !transaction.getUserId().equals(userDetails.getId())) {
             throw new ResourceNotFoundException("Acesso negado à transação id = " + id, HttpStatus.FORBIDDEN);
         }
@@ -128,7 +127,6 @@ public class TransactionServiceImpl implements TransactionService {
         return new PageImpl<>(responseList, pageable, transactions.getTotalElements());
     }
 
-
     @Override
     public Page<TransactionResponse> findWithFilters(Specification<Transaction> spec, int page, int size) {
         JwtUserDetails userDetails = getAuthenticatedUser();
@@ -144,5 +142,4 @@ public class TransactionServiceImpl implements TransactionService {
         List<TransactionResponse> responseList = transactionMapper.toList(transactions.getContent());
         return new PageImpl<>(responseList, pageable, transactions.getTotalElements());
     }
-
 }
