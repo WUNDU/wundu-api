@@ -10,7 +10,7 @@ import ao.com.wundu.transaction.dtos.TransactionResponse;
 import ao.com.wundu.transaction.entity.Transaction;
 import ao.com.wundu.transaction.mapper.TransactionMapper;
 import ao.com.wundu.transaction.repository.TransactionRepository;
-import ao.com.wundu.transaction.repository.TransactionSpecifications;
+import ao.com.wundu.transaction.specification.TransactionSpec;
 import ao.com.wundu.transaction.service.TransactionService;
 import ao.com.wundu.usuario.entity.User;
 import ao.com.wundu.usuario.repository.UserRepository;
@@ -130,20 +130,13 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Page<TransactionResponse> findWithFilters(String categoryId,
-                                                     String status, LocalDate startDate, LocalDate endDate,
-                                                     int page, int size) {
+    public Page<TransactionResponse> findWithFilters(Specification<Transaction> spec, int page, int size) {
         JwtUserDetails userDetails = getAuthenticatedUser();
 
-        Specification<Transaction> spec = (root, query, builder) -> builder.conjunction();
-
         if (userDetails.getRole().equals(Role.CLIENTE.name())) {
-            spec = spec.and(TransactionSpecifications.hasUserId(userDetails.getId()));
+            spec = spec.and((root, query, builder) ->
+                builder.equal(root.get("userId"), userDetails.getId()));
         }
-
-        spec = spec.and(TransactionSpecifications.hasCategoryId(categoryId));
-        spec = spec.and(TransactionSpecifications.hasStatus(status));
-        spec = spec.and(TransactionSpecifications.betweenDates(startDate, endDate));
 
         PageRequest pageable = PageRequest.of(page, size);
         Page<Transaction> transactions = transactionRepository.findAll(spec, pageable);
@@ -151,4 +144,5 @@ public class TransactionServiceImpl implements TransactionService {
         List<TransactionResponse> responseList = transactionMapper.toList(transactions.getContent());
         return new PageImpl<>(responseList, pageable, transactions.getTotalElements());
     }
+
 }

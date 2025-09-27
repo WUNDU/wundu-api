@@ -1,5 +1,7 @@
 package ao.com.wundu.transaction.service;
 
+import org.springframework.data.jpa.domain.Specification;
+import ao.com.wundu.transaction.entity.Transaction;
 import ao.com.wundu.category.dto.DefineCategoryRequest;
 import ao.com.wundu.transaction.dtos.TransactionRequest;
 import ao.com.wundu.transaction.dtos.TransactionResponse;
@@ -22,7 +24,6 @@ public interface TransactionService {
 
     Page<TransactionResponse> findAll(int page, int size);
 
-    Page<TransactionResponse> findWithFilters(String categoryId,
-                                              String status, LocalDate startDate, LocalDate endDate,
-                                              int page, int size);
+    Page<TransactionResponse> findWithFilters(Specification<Transaction> spec, int page, int size)
+
 }

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public final class TransactionMapper {
+public class TransactionMapper {
 
     @Autowired
     private CategoryMapper categoryMapper;
@@ -22,17 +22,17 @@ public final class TransactionMapper {
     }
 
     public Transaction toEntity(TransactionRequest request) {
-    Transaction transaction = new Transaction(
-            request.amount(),
-            request.description(),
-            request.type(),
-            request.userId(),
-            request.transactionDate(),
-            request.status() == null ? TransactionStatus.PENDING : request.status()
-    );
-    transaction.setSource(request.source());
-    transaction.setCategory(null);
-    return transaction;
+        Transaction transaction = new Transaction(
+                request.amount(),
+                request.description(),
+                request.type(),
+                request.userId(),
+                request.transactionDate(),
+                request.status() == null ? TransactionStatus.PENDING : request.status()
+        );
+        transaction.setSource(request.source());
+        transaction.setCategory(null);
+        return transaction;
     }
 
     public TransactionResponse toResponse(Transaction transaction) {
