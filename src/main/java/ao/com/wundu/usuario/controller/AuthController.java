@@ -4,6 +4,9 @@ import ao.com.wundu.jwt.JwtToken;
 import ao.com.wundu.jwt.JwtUserDetailsService;
 import ao.com.wundu.usuario.dto.UserLogin;
 import ao.com.wundu.usuario.dto.UserResponse;
+import ao.com.wundu.usuario.dto.AuthResponse;
+import ao.com.wundu.usuario.entity.User;
+import ao.com.wundu.usuario.mapper.UserMapper;
 import ao.com.wundu.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,6 +34,9 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
     private JwtUserDetailsService detailsService;
 
     @Autowired
@@ -39,8 +45,8 @@ public class AuthController {
     @Operation(summary = "Autenticar na API", description = "Recurso de Autenticação na API",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Autenticação realizada com sucesso e retorno de um bearer token",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
-                    @ApiResponse(responseCode = "400", description = "Credencias inválidas",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Credenciais inválidas",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "422", description = "Campo(s) Inválido(s)",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
@@ -57,7 +63,15 @@ public class AuthController {
             authenticationManager.authenticate(authenticationToken);
 
             JwtToken token = detailsService.getTokenAuthenticated(login.email());
-            return ResponseEntity.ok(token);
+
+            User user = detailsService.getUserByEmail(login.email());
+
+            UserResponse userResponse = userMapper.toResponse(user);
+
+            AuthResponse authResponse = new AuthResponse(token.getToken(), userResponse);
+
+            return ResponseEntity.ok(authResponse);
+
         } catch (AuthenticationException ex) {
             logger.warn("Bad Credentials from username '{}'", login.email());
         }
