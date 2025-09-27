@@ -13,6 +13,6 @@ import java.time.LocalDate;
     @Spec(path = "category.id", spec = Equal.class),
     @Spec(path = "status", spec = Equal.class),
     @Spec(path = "transactionDate", params = {"startDate", "endDate"}, spec = Between.class),
-    @Spec(path = "userId", spec = Equal.class) 
+    @Spec(path = "userId", spec = Equal.class)
 })
 public interface TransactionSpec extends java.io.Serializable, org.springframework.data.jpa.domain.Specification<Transaction> {}

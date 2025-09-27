@@ -24,6 +24,6 @@ public interface TransactionService {
 
     Page<TransactionResponse> findAll(int page, int size);
 
-    Page<TransactionResponse> findWithFilters(Specification<Transaction> spec, int page, int size)
+    Page<TransactionResponse> findWithFilters(Specification<Transaction> spec, int page, int size);
 
 }
