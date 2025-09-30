@@ -11,9 +11,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Representa a tabela financial_goals.
- */
 @Entity
 @Table(name = "financial_goals")
 public class FinancialGoal {
@@ -59,9 +56,6 @@ public class FinancialGoal {
     private List<GoalProgress> progress = new ArrayList<>();
 
     public FinancialGoal() {}
-
-    // Getters and setters (omitted here for brevity in message but should be included in code)
-    // ... include all standard getters/setters for fields above.
 
     // convenience methods
     public void addProgress(GoalProgress p) {

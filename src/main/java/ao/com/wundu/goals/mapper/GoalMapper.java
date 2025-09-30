@@ -21,11 +21,10 @@ public class GoalMapper {
         goal.setTargetAmount(req.targetAmount());
         goal.setStartDate(req.startDate());
         goal.setEndDate(req.endDate());
-        // currentAmount stays default 0, status default ACTIVE
         return goal;
     }
 
-    public GoalResponseDTO toResponse(FinancialGoal goal) {
+    public GoalResponseDTO toResponse(FinancialGoal goal, Double percentage) {
         List<GoalProgressDTO> progress = goal.getProgress().stream()
                 .map(this::toProgressDTO)
                 .collect(Collectors.toList());
@@ -38,6 +37,7 @@ public class GoalMapper {
                 goal.getType(),
                 goal.getTargetAmount(),
                 goal.getCurrentAmount(),
+                percentage,
                 goal.getStartDate(),
                 goal.getEndDate(),
                 goal.getStatus(),

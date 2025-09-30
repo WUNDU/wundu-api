@@ -16,7 +16,7 @@ public interface GoalService {
 
     GoalResponseDTO findById(String id, String userId);
 
-    List<GoalResponseDTO> findByUser(String userId);
+    List<GoalResponseDTO> findByUser(String userId, String status);
 
     GoalProgressDTO addProgress(String goalId, String userId, BigDecimal amount, LocalDate progressDate);
 

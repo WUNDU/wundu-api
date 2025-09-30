@@ -33,6 +33,9 @@ public record GoalResponseDTO(
     @Schema(description = "Valor atual acumulado", example = "1200.00")
     BigDecimal currentAmount,
 
+    @Schema(description = "Percentual de progresso da meta", example = "24.0")
+    Double progressPercentage,
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate startDate,
 

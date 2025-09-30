@@ -5,6 +5,7 @@ import ao.com.wundu.goals.dtos.GoalRequestDTO;
 import ao.com.wundu.goals.dtos.GoalResponseDTO;
 import ao.com.wundu.goals.entity.FinancialGoal;
 import ao.com.wundu.goals.entity.GoalProgress;
+import ao.com.wundu.goals.enums.GoalStatus;
 import ao.com.wundu.goals.mapper.GoalMapper;
 import ao.com.wundu.goals.repository.GoalProgressRepository;
 import ao.com.wundu.goals.repository.GoalRepository;
@@ -16,16 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Implementação do serviço de metas.
- * Regras importantes:
- * - Apenas o dono (userId) pode criar/editar/deletar/adicionar progresso em sua meta.
- * - Ao adicionar progresso, atualizamos currentAmount e status (DONE se current >= target).
- */
 @Service
 public class GoalServiceImpl implements GoalService {
 
@@ -38,13 +34,22 @@ public class GoalServiceImpl implements GoalService {
     @Autowired
     private GoalMapper mapper;
 
+    private Double calculatePercentage(BigDecimal current, BigDecimal target) {
+        if (current == null || target == null || target.compareTo(BigDecimal.ZERO) == 0) {
+            return 0.0;
+        }
+        return current.divide(target, 4, RoundingMode.HALF_UP)
+                      .multiply(BigDecimal.valueOf(100))
+                      .doubleValue();
+    }
+
     @Override
     @Transactional
     public GoalResponseDTO create(String userId, GoalRequestDTO request) {
         FinancialGoal goal = mapper.toEntity(request);
         goal.setUserId(userId);
         goal = goalRepository.save(goal);
-        return mapper.toResponse(goal);
+        return mapper.toResponse(goal, calculatePercentage(goal.getCurrentAmount(), goal.getTargetAmount()));
     }
 
     @Override
@@ -57,7 +62,6 @@ public class GoalServiceImpl implements GoalService {
             throw new ResourceNotFoundException("Acesso negado para editar esta meta", HttpStatus.FORBIDDEN);
         }
 
-        // Atualiza campos permitidos
         goal.setTitle(request.title());
         goal.setDescription(request.description());
         goal.setType(request.type());
@@ -65,13 +69,12 @@ public class GoalServiceImpl implements GoalService {
         goal.setStartDate(request.startDate());
         goal.setEndDate(request.endDate());
 
-        // se currentAmount >= novo target, atualiza status para DONE
         if (goal.getCurrentAmount().compareTo(goal.getTargetAmount()) >= 0) {
-            goal.setStatus(ao.com.wundu.goals.enums.GoalStatus.DONE);
+            goal.setStatus(GoalStatus.DONE);
         }
 
         goal = goalRepository.save(goal);
-        return mapper.toResponse(goal);
+        return mapper.toResponse(goal, calculatePercentage(goal.getCurrentAmount(), goal.getTargetAmount()));
     }
 
     @Override
@@ -81,13 +84,22 @@ public class GoalServiceImpl implements GoalService {
         if (!goal.getUserId().equals(userId)) {
             throw new ResourceNotFoundException("Acesso negado a esta meta", HttpStatus.FORBIDDEN);
         }
-        return mapper.toResponse(goal);
+        return mapper.toResponse(goal, calculatePercentage(goal.getCurrentAmount(), goal.getTargetAmount()));
     }
 
     @Override
-    public List<GoalResponseDTO> findByUser(String userId) {
+    public List<GoalResponseDTO> findByUser(String userId, String status) {
         List<FinancialGoal> goals = goalRepository.findByUserId(userId);
-        return goals.stream().map(mapper::toResponse).collect(Collectors.toList());
+
+        if (status != null) {
+            goals = goals.stream()
+                    .filter(g -> g.getStatus().name().equalsIgnoreCase(status))
+                    .collect(Collectors.toList());
+        }
+
+        return goals.stream()
+                .map(g -> mapper.toResponse(g, calculatePercentage(g.getCurrentAmount(), g.getTargetAmount())))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -111,13 +123,11 @@ public class GoalServiceImpl implements GoalService {
         GoalProgress progress = mapper.toProgressEntity(amount, progressDate);
         progress.setGoal(goal);
 
-        // salva progress
         progress = progressRepository.save(progress);
 
-        // atualiza currentAmount e status
         goal.increaseCurrentAmount(amount);
         if (goal.getCurrentAmount().compareTo(goal.getTargetAmount()) >= 0) {
-            goal.setStatus(ao.com.wundu.goals.enums.GoalStatus.DONE);
+            goal.setStatus(GoalStatus.DONE);
         }
         goalRepository.save(goal);
 
@@ -131,11 +141,10 @@ public class GoalServiceImpl implements GoalService {
         if (!goal.getUserId().equals(userId)) {
             throw new ResourceNotFoundException("Acesso negado", HttpStatus.FORBIDDEN);
         }
-        List<GoalProgressDTO> list = progressRepository.findByGoal_IdOrderByProgressDateDesc(goalId)
+        return progressRepository.findByGoal_IdOrderByProgressDateDesc(goalId)
                 .stream()
                 .map(mapper::toProgressDTO)
                 .collect(Collectors.toList());
-        return list;
     }
 
     @Override

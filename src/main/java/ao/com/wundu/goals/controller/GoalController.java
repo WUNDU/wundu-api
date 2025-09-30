@@ -79,14 +79,16 @@ public class GoalController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todas as metas do usuário autenticado")
+    @Operation(summary = "Listar todas as metas do usuário autenticado (com filtro por status opcional)")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = GoalResponseDTO.class)))
     })
-    public ResponseEntity<List<GoalResponseDTO>> findByUser() {
+    public ResponseEntity<List<GoalResponseDTO>> findByUser(
+            @RequestParam(required = false) String status
+    ) {
         JwtUserDetails user = getAuthenticatedUser();
-        return ResponseEntity.ok(goalService.findByUser(user.getId()));
+        return ResponseEntity.ok(goalService.findByUser(user.getId(), status));
     }
 
     @PostMapping("/{id}/progress")
