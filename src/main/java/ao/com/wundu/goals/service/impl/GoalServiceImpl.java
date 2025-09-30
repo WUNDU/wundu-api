@@ -57,11 +57,12 @@ public class GoalServiceImpl implements GoalService {
         goal = goalRepository.save(goal);
 
         // Auditoria
-        //auditService.record("GOAL_CREATED", userId, goal.getId());
+        // auditService.record("GOAL_CREATED", userId, goal.getId(),
+        //         "title=" + goal.getTitle() + ", target=" + goal.getTargetAmount());
 
         return mapper.toResponse(
-            goal, 
-            calculatePercentage(goal.getCurrentAmount(), 
+            goal,
+            calculatePercentage(goal.getCurrentAmount(),
             goal.getTargetAmount()));
     }
 
@@ -73,7 +74,7 @@ public class GoalServiceImpl implements GoalService {
 
         if (!goal.getUserId().equals(userId)) {
             throw new ResourceNotFoundException(
-                "Acesso negado para editar esta meta", 
+                "Acesso negado para editar esta meta",
                 HttpStatus.FORBIDDEN);
         }
 
@@ -97,11 +98,12 @@ public class GoalServiceImpl implements GoalService {
         goal = goalRepository.save(goal);
 
         // Auditoria
-        //auditService.record("GOAL_UPDATED", userId, goal.getId());
+        // auditService.record("GOAL_UPDATED", userId, goal.getId(),
+        //         "title=" + goal.getTitle() + ", target=" + goal.getTargetAmount());
 
         return mapper.toResponse(
-            goal, 
-            calculatePercentage(goal.getCurrentAmount(), 
+            goal,
+            calculatePercentage(goal.getCurrentAmount(),
             goal.getTargetAmount()));
     }
 
@@ -113,7 +115,7 @@ public class GoalServiceImpl implements GoalService {
             throw new ResourceNotFoundException("Acesso negado a esta meta", HttpStatus.FORBIDDEN);
         }
         return mapper.toResponse(
-            goal, calculatePercentage(goal.getCurrentAmount(), 
+            goal, calculatePercentage(goal.getCurrentAmount(),
             goal.getTargetAmount()));
     }
 
@@ -140,19 +142,19 @@ public class GoalServiceImpl implements GoalService {
 
         if (!goal.getUserId().equals(userId)) {
             throw new ResourceNotFoundException(
-                "Acesso negado para adicionar progresso", 
+                "Acesso negado para adicionar progresso",
                 HttpStatus.FORBIDDEN);
         }
 
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ResourceNotFoundException(
-                "Valor de progresso inválido", 
+                "Valor de progresso inválido",
                 HttpStatus.BAD_REQUEST);
         }
 
         if (progressDate == null) {
             throw new ResourceNotFoundException(
-                "Data do progresso é obrigatória", 
+                "Data do progresso é obrigatória",
                 HttpStatus.BAD_REQUEST);
         }
 
@@ -190,9 +192,15 @@ public class GoalServiceImpl implements GoalService {
                 .orElseThrow(() -> new ResourceNotFoundException("Meta não encontrada com id=" + id));
         if (!goal.getUserId().equals(userId)) {
             throw new ResourceNotFoundException(
-                "Acesso negado para remover meta", 
+                "Acesso negado para remover meta",
                 HttpStatus.FORBIDDEN);
         }
-        goalRepository.delete(goal);
+
+        goal.setStatus(GoalStatus.ARCHIVED);
+        goalRepository.save(goal);
+
+        // Auditoria
+        // auditService.record("GOAL_ARCHIVED", userId, goal.getId(),
+        //         "archived by user");
     }
 }
