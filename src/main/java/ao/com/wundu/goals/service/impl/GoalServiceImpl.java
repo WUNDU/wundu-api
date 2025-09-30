@@ -56,7 +56,6 @@ public class GoalServiceImpl implements GoalService {
         goal.setUserId(userId);
         goal = goalRepository.save(goal);
 
-        // Auditoria
         // auditService.record("GOAL_CREATED", userId, goal.getId(),
         //         "title=" + goal.getTitle() + ", target=" + goal.getTargetAmount());
 
@@ -97,7 +96,6 @@ public class GoalServiceImpl implements GoalService {
 
         goal = goalRepository.save(goal);
 
-        // Auditoria
         // auditService.record("GOAL_UPDATED", userId, goal.getId(),
         //         "title=" + goal.getTitle() + ", target=" + goal.getTargetAmount());
 
@@ -111,12 +109,15 @@ public class GoalServiceImpl implements GoalService {
     public GoalResponseDTO findById(String id, String userId) {
         FinancialGoal goal = goalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Meta não encontrada com id=" + id));
+
         if (!goal.getUserId().equals(userId)) {
-            throw new ResourceNotFoundException("Acesso negado a esta meta", HttpStatus.FORBIDDEN);
+            throw new ResourceNotFoundException(
+                "Acesso negado a esta meta",
+                HttpStatus.FORBIDDEN);
         }
-        return mapper.toResponse(
-            goal, calculatePercentage(goal.getCurrentAmount(),
-            goal.getTargetAmount()));
+
+        Double percentage = calculatePercentage(goal.getCurrentAmount(), goal.getTargetAmount());
+        return mapper.toResponse(goal, percentage);
     }
 
     @Override
@@ -199,7 +200,6 @@ public class GoalServiceImpl implements GoalService {
         goal.setStatus(GoalStatus.ARCHIVED);
         goalRepository.save(goal);
 
-        // Auditoria
         // auditService.record("GOAL_ARCHIVED", userId, goal.getId(),
         //         "archived by user");
     }
