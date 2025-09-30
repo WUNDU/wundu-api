@@ -54,6 +54,15 @@ public class UserController {
                 .body(response);
     }
 
+    @PutMapping("/id")
+    @PreAuthorize("(hasRole('CLIENTE') and #id == principal.id)")
+    public ResponseEntity<UserResponse> update(@Valid @RequestBody UserRequest request, @PathVariable String id) {
+        UserResponse response = userService.update(id, request);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
     @Operation(summary = "Recuperar um usuário por id", description = "Requisição exige um Bearer Token. Acesso restrito a ADMIN|CLIENTE",
             security = @SecurityRequirement(name = "security"),
             responses = {

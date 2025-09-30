@@ -8,13 +8,12 @@ import ao.com.wundu.usuario.enums.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface UserService {
 
     UserResponse create(UserRequest request);
+    UserResponse update(String id, UserRequest request);
     Role findRoleByEmail(String email);
     User findByEmail(String email);
     UserResponse findById(String id);
