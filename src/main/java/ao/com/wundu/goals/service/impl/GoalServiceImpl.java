@@ -77,18 +77,28 @@ public class GoalServiceImpl implements GoalService {
                 HttpStatus.FORBIDDEN);
         }
 
+        if (request.endDate().isBefore(goal.getStartDate()) || request.endDate().isEqual(goal.getStartDate())) {
+            throw new ResourceNotFoundException(
+                "Data final deve ser maior que a data inicial",
+                HttpStatus.BAD_REQUEST);
+        }
+
         goal.setTitle(request.title());
         goal.setDescription(request.description());
-        goal.setType(request.type());
         goal.setTargetAmount(request.targetAmount());
-        goal.setStartDate(request.startDate());
         goal.setEndDate(request.endDate());
 
         if (goal.getCurrentAmount().compareTo(goal.getTargetAmount()) >= 0) {
             goal.setStatus(GoalStatus.DONE);
+        } else {
+            goal.setStatus(GoalStatus.ACTIVE);
         }
 
         goal = goalRepository.save(goal);
+
+        // Auditoria
+        //auditService.record("GOAL_UPDATED", userId, goal.getId());
+
         return mapper.toResponse(
             goal, 
             calculatePercentage(goal.getCurrentAmount(), 
