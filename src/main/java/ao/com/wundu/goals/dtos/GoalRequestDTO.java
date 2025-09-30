@@ -3,6 +3,7 @@ package ao.com.wundu.goals.dtos;
 import ao.com.wundu.goals.enums.GoalType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -31,6 +32,10 @@ public record GoalRequestDTO(
 
     @NotNull(message = "Data final é obrigatória")
     @Schema(example = "2026-09-01", description = "Data final")
-    LocalDate endDate
+    LocalDate endDate,
+
+    @NotBlank(message = "Categoria é obrigatória")
+    @Schema(example = "travel", description = "Categoria da meta")
+    String categoryId
 
 ) {}

@@ -44,6 +44,9 @@ public class FinancialGoal {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
+    @Column(name = "category_id", nullable = false, length = 100)
+    private String categoryId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 25)
     private GoalStatus status = GoalStatus.ACTIVE;
@@ -57,19 +60,17 @@ public class FinancialGoal {
 
     public FinancialGoal() {}
 
-    // convenience methods
     public void addProgress(GoalProgress p) {
         this.progress.add(p);
         p.setGoal(this);
     }
 
-    public void increaseCurrentAmount(java.math.BigDecimal amount) {
+    public void increaseCurrentAmount(BigDecimal amount) {
         if (amount != null) {
             this.currentAmount = this.currentAmount.add(amount);
         }
     }
 
-    // ... getters and setters
     public String getId() { return id; }
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
@@ -79,14 +80,16 @@ public class FinancialGoal {
     public void setDescription(String description) { this.description = description; }
     public GoalType getType() { return type; }
     public void setType(GoalType type) { this.type = type; }
-    public java.math.BigDecimal getTargetAmount() { return targetAmount; }
-    public void setTargetAmount(java.math.BigDecimal targetAmount) { this.targetAmount = targetAmount; }
-    public java.math.BigDecimal getCurrentAmount() { return currentAmount; }
-    public void setCurrentAmount(java.math.BigDecimal currentAmount) { this.currentAmount = currentAmount; }
+    public BigDecimal getTargetAmount() { return targetAmount; }
+    public void setTargetAmount(BigDecimal targetAmount) { this.targetAmount = targetAmount; }
+    public BigDecimal getCurrentAmount() { return currentAmount; }
+    public void setCurrentAmount(BigDecimal currentAmount) { this.currentAmount = currentAmount; }
     public LocalDate getStartDate() { return startDate; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
     public LocalDate getEndDate() { return endDate; }
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+    public String getCategoryId() { return categoryId; }
+    public void setCategoryId(String categoryId) { this.categoryId = categoryId; }
     public GoalStatus getStatus() { return status; }
     public void setStatus(GoalStatus status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }

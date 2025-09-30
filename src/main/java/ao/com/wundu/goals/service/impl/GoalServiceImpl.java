@@ -46,10 +46,23 @@ public class GoalServiceImpl implements GoalService {
     @Override
     @Transactional
     public GoalResponseDTO create(String userId, GoalRequestDTO request) {
+        if (request.endDate().isBefore(request.startDate()) || request.endDate().isEqual(request.startDate())) {
+            throw new ResourceNotFoundException(
+                "Data final deve ser maior que a data inicial",
+                HttpStatus.BAD_REQUEST);
+        }
+
         FinancialGoal goal = mapper.toEntity(request);
         goal.setUserId(userId);
         goal = goalRepository.save(goal);
-        return mapper.toResponse(goal, calculatePercentage(goal.getCurrentAmount(), goal.getTargetAmount()));
+
+        // Auditoria
+        //auditService.record("GOAL_CREATED", userId, goal.getId());
+
+        return mapper.toResponse(
+            goal, 
+            calculatePercentage(goal.getCurrentAmount(), 
+            goal.getTargetAmount()));
     }
 
     @Override
@@ -59,7 +72,9 @@ public class GoalServiceImpl implements GoalService {
                 .orElseThrow(() -> new ResourceNotFoundException("Meta não encontrada com id=" + id));
 
         if (!goal.getUserId().equals(userId)) {
-            throw new ResourceNotFoundException("Acesso negado para editar esta meta", HttpStatus.FORBIDDEN);
+            throw new ResourceNotFoundException(
+                "Acesso negado para editar esta meta", 
+                HttpStatus.FORBIDDEN);
         }
 
         goal.setTitle(request.title());
@@ -74,7 +89,10 @@ public class GoalServiceImpl implements GoalService {
         }
 
         goal = goalRepository.save(goal);
-        return mapper.toResponse(goal, calculatePercentage(goal.getCurrentAmount(), goal.getTargetAmount()));
+        return mapper.toResponse(
+            goal, 
+            calculatePercentage(goal.getCurrentAmount(), 
+            goal.getTargetAmount()));
     }
 
     @Override
@@ -84,7 +102,9 @@ public class GoalServiceImpl implements GoalService {
         if (!goal.getUserId().equals(userId)) {
             throw new ResourceNotFoundException("Acesso negado a esta meta", HttpStatus.FORBIDDEN);
         }
-        return mapper.toResponse(goal, calculatePercentage(goal.getCurrentAmount(), goal.getTargetAmount()));
+        return mapper.toResponse(
+            goal, calculatePercentage(goal.getCurrentAmount(), 
+            goal.getTargetAmount()));
     }
 
     @Override
@@ -109,15 +129,21 @@ public class GoalServiceImpl implements GoalService {
                 .orElseThrow(() -> new ResourceNotFoundException("Meta não encontrada com id=" + goalId));
 
         if (!goal.getUserId().equals(userId)) {
-            throw new ResourceNotFoundException("Acesso negado para adicionar progresso", HttpStatus.FORBIDDEN);
+            throw new ResourceNotFoundException(
+                "Acesso negado para adicionar progresso", 
+                HttpStatus.FORBIDDEN);
         }
 
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ResourceNotFoundException("Valor de progresso inválido", HttpStatus.BAD_REQUEST);
+            throw new ResourceNotFoundException(
+                "Valor de progresso inválido", 
+                HttpStatus.BAD_REQUEST);
         }
 
         if (progressDate == null) {
-            throw new ResourceNotFoundException("Data do progresso é obrigatória", HttpStatus.BAD_REQUEST);
+            throw new ResourceNotFoundException(
+                "Data do progresso é obrigatória", 
+                HttpStatus.BAD_REQUEST);
         }
 
         GoalProgress progress = mapper.toProgressEntity(amount, progressDate);
@@ -153,7 +179,9 @@ public class GoalServiceImpl implements GoalService {
         FinancialGoal goal = goalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Meta não encontrada com id=" + id));
         if (!goal.getUserId().equals(userId)) {
-            throw new ResourceNotFoundException("Acesso negado para remover meta", HttpStatus.FORBIDDEN);
+            throw new ResourceNotFoundException(
+                "Acesso negado para remover meta", 
+                HttpStatus.FORBIDDEN);
         }
         goalRepository.delete(goal);
     }

@@ -21,6 +21,7 @@ public class GoalMapper {
         goal.setTargetAmount(req.targetAmount());
         goal.setStartDate(req.startDate());
         goal.setEndDate(req.endDate());
+        goal.setCategoryId(req.categoryId());
         return goal;
     }
 
