@@ -1,6 +1,5 @@
 package ao.com.wundu.transaction.service.impl;
 
-import ao.com.wundu.category.dto.DefineCategoryRequest;
 import ao.com.wundu.category.entity.Category;
 import ao.com.wundu.category.repository.CategoryRepository;
 import ao.com.wundu.exception.ResourceNotFoundException;
@@ -10,22 +9,18 @@ import ao.com.wundu.transaction.dtos.TransactionResponse;
 import ao.com.wundu.transaction.entity.Transaction;
 import ao.com.wundu.transaction.mapper.TransactionMapper;
 import ao.com.wundu.transaction.repository.TransactionRepository;
-import ao.com.wundu.transaction.repository.TransactionSpecifications;
 import ao.com.wundu.transaction.service.TransactionService;
 import ao.com.wundu.usuario.entity.User;
-import ao.com.wundu.usuario.repository.UserRepository;
 import ao.com.wundu.usuario.enums.Role;
+import ao.com.wundu.usuario.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -69,16 +64,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionResponse defineTransaction(String transactionId, DefineCategoryRequest request) {
+    public TransactionResponse defineTransaction(String transactionId, String categoryName) {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transação não encontrada."));
 
-        if (request.description() != null) {
-            transaction.setDescription(request.description());
-        }
-
-        Category category = categoryRepository.findByName(request.categoryName())
-                .orElseGet(() -> categoryRepository.save(new Category(request.categoryName())));
+        Category category = categoryRepository.findByName(categoryName)
+                .orElseGet(() -> categoryRepository.save(new Category(categoryName)));
         transaction.setCategory(category);
 
         transactionRepository.save(transaction);
@@ -90,8 +81,8 @@ public class TransactionServiceImpl implements TransactionService {
         JwtUserDetails userDetails = getAuthenticatedUser();
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transação com id=" + id + " não encontrada"));
-        if (!userDetails.getRole().equals(Role.ADMIN.name()) && 
-            !transaction.getUserId().equals(userDetails.getId())) {
+        if (!userDetails.getRole().equals(Role.ADMIN.name()) &&
+                !transaction.getUserId().equals(userDetails.getId())) {
             throw new ResourceNotFoundException("Acesso negado à transação id = " + id, HttpStatus.FORBIDDEN);
         }
         return transactionMapper.toResponse(transaction);
@@ -120,9 +111,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (userDetails.getRole().equals(Role.ADMIN.name())) {
             transactions = transactionRepository.findAll(pageable);
         } else {
-            transactions = transactionRepository.findAll(
-                    TransactionSpecifications.hasUserId(userDetails.getId()), pageable
-            );
+            transactions = transactionRepository.findByUserId(userDetails.getId(), pageable);
         }
 
         List<TransactionResponse> responseList = transactionMapper.toList(transactions.getContent());
@@ -130,22 +119,15 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Page<TransactionResponse> findWithFilters(String categoryId,
-                                                     String status, LocalDate startDate, LocalDate endDate,
-                                                     int page, int size) {
+    public Page<TransactionResponse> findWithFilters(Specification<Transaction> spec, Pageable pageable) {
         JwtUserDetails userDetails = getAuthenticatedUser();
 
-        Specification<Transaction> spec = (root, query, builder) -> builder.conjunction();
-
         if (userDetails.getRole().equals(Role.CLIENTE.name())) {
-            spec = spec.and(TransactionSpecifications.hasUserId(userDetails.getId()));
+            Specification<Transaction> userSpec = (root, query, builder) ->
+                    builder.equal(root.get("userId"), userDetails.getId());
+            spec = (spec == null) ? userSpec : spec.and(userSpec);
         }
 
-        spec = spec.and(TransactionSpecifications.hasCategoryId(categoryId));
-        spec = spec.and(TransactionSpecifications.hasStatus(status));
-        spec = spec.and(TransactionSpecifications.betweenDates(startDate, endDate));
-
-        PageRequest pageable = PageRequest.of(page, size);
         Page<Transaction> transactions = transactionRepository.findAll(spec, pageable);
 
         List<TransactionResponse> responseList = transactionMapper.toList(transactions.getContent());

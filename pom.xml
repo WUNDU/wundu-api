@@ -19,6 +19,8 @@
 
     <properties>
         <java.version>17</java.version>
+        <springdoc.version>2.7.0</springdoc.version>
+        <specification-arg-resolver.version>3.0.0</specification-arg-resolver.version>
     </properties>
 
     <dependencies>
@@ -40,11 +42,18 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Swagger / OpenAPI -->
+        <!-- Swagger / OpenAPI com springdoc -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.7.0</version>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <!-- Specification Arg Resolver para @ParameterObject -->
+        <dependency>
+            <groupId>net.kaczmarzyk</groupId>
+            <artifactId>specification-arg-resolver</artifactId>
+            <version>${specification-arg-resolver.version}</version>
         </dependency>
 
         <!-- JWT -->
@@ -94,13 +103,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <!-- Specification Arg Resolver -->
-        <dependency>
-            <groupId>net.kaczmarzyk</groupId>
-            <artifactId>specification-arg-resolver</artifactId>
-            <version>3.0.0</version>
         </dependency>
 
         <!-- Testes -->

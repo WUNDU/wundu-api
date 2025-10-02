@@ -1,16 +1,18 @@
 package ao.com.wundu.transaction.repository;
 
 import ao.com.wundu.transaction.entity.Transaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String>, JpaSpecificationExecutor<Transaction> {
+
+    List<Transaction> findByUserIdAndCategory_Id(String userId, String categoryId);
 
     List<Transaction> findByUserId(String userId);
 
-    List<Transaction> findByUserIdAndCategory_Id(String userId, String categoryId);
+    Page<Transaction> findByUserId(String userId, Pageable pageable);
 }

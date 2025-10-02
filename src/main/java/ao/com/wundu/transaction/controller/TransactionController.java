@@ -4,7 +4,9 @@ import ao.com.wundu.category.dto.DefineCategoryRequest;
 import ao.com.wundu.exception.ErrorMessage;
 import ao.com.wundu.transaction.dtos.TransactionRequest;
 import ao.com.wundu.transaction.dtos.TransactionResponse;
+import ao.com.wundu.transaction.entity.Transaction;
 import ao.com.wundu.transaction.service.TransactionService;
+import ao.com.wundu.transaction.specification.SpecificationTransactionTemplate.TransactionSpec;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,12 +15,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.data.domain.Page;
+import org.springdoc.core.annotations.ParameterObject;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -78,23 +81,21 @@ public class TransactionController {
     @GetMapping("/filters")
     @Operation(summary = "Filtrar transações do usuário autenticado ou todas se ADMIN")
     public ResponseEntity<Page<TransactionResponse>> findWithFilters(
-            @RequestParam(required = false) String categoryId,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @ParameterObject TransactionSpec spec,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<TransactionResponse> responses =
-                transactionService.findWithFilters(categoryId, status, startDate, endDate, page, size);
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<TransactionResponse> responses = transactionService.findWithFilters(spec, pageable);
         return ResponseEntity.ok(responses);
     }
 
     @PutMapping("/{id}/define-category")
-    @Operation(summary = "Definir categoria e descrição de uma transação")
+    @Operation(summary = "Definir categoria de uma transação")
     public ResponseEntity<TransactionResponse> defineCategory(
             @PathVariable String id,
             @RequestBody @Valid DefineCategoryRequest request) {
-        return ResponseEntity.ok(transactionService.defineTransaction(id, request));
+        TransactionResponse response = transactionService.defineTransaction(id, request.categoryName());
+        return ResponseEntity.ok(response);
     }
 }
