@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/wundu-db
     username: postgres
-    password: postgres
+    password: 12345
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -23,6 +23,11 @@ spring:
   hikari:
     initialization-fail-timeout: 60000
 
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
 springdoc:
   api-docs:
     path: /docs-wundu
@@ -31,3 +36,20 @@ springdoc:
     enabled: true
   packages-to-scan: ao.com.wundu
   paths-to-match: /api/**
+
+document:
+  storage:
+    path: /home/eges-code/Downloads/documents
+    user-isolation: true
+    allowed-types: application/pdf,image/jpeg,image/jpg,image/png
+
+ocr:
+  engine:
+    type: huggingface
+  huggingface:
+    api:
+      key: ${HUGGINGFACE_TOKEN}
+    model: microsoft/trocr-large-printed
+  min:
+    confidence:
+      rate: 0.85
